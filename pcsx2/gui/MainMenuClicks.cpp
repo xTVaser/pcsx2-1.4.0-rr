@@ -495,12 +495,30 @@ void MainEmuFrame::Menu_SaveStates_Click(wxCommandEvent &event)
 
 void MainEmuFrame::Menu_LoadStateOther_Click(wxCommandEvent &event)
 {
-   Console.WriteLn("If this were hooked up, it would load a savestate file.");
+	wxFileDialog loadStateDialog(this, _("Load State"), L"", L"",
+		L"Savestate files (*.p2s)|*.p2s", wxFD_OPEN);
+
+	if (loadStateDialog.ShowModal() == wxID_CANCEL)
+		return;
+
+	wxString path = loadStateDialog.GetPath();
+	Console.WriteLn(path);
+
+	StateCopy_LoadFromFile(path);
 }
 
 void MainEmuFrame::Menu_SaveStateOther_Click(wxCommandEvent &event)
 {
-   Console.WriteLn("If this were hooked up, it would save a savestate file.");
+	wxFileDialog saveStateDialog(this, _("Save State"), L"", L"",
+		L"Savestate files (*.p2s)|*.p2s", wxFD_OPEN);
+
+	if (saveStateDialog.ShowModal() == wxID_CANCEL)
+		return;
+
+	wxString path = saveStateDialog.GetPath();
+	Console.WriteLn(path);
+
+	StateCopy_SaveToFile(path);
 }
 
 void MainEmuFrame::Menu_Exit_Click(wxCommandEvent &event)

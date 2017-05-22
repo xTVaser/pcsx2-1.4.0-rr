@@ -47,7 +47,7 @@ wxMenu* MainEmuFrame::MakeStatesSubMenu( int baseid, int loadBackupId ) const
 		States_registerLoadBackupMenuItem( m );
 	}
 
-	//mnuSubstates->Append( baseid - 1,	_("Other...") );
+	mnuSubstates->Append( baseid - 1,	_("Other...") );
 	return mnuSubstates;
 }
 
@@ -222,13 +222,13 @@ void MainEmuFrame::ConnectMenus()
 	ConnectMenu( MenuId_Sys_Restart,		Menu_SysReset_Click );
 	ConnectMenu( MenuId_Sys_Shutdown,		Menu_SysShutdown_Click );
 
-	//ConnectMenu( MenuId_State_LoadOther,	Menu_LoadStateOther_Click );
+	ConnectMenu( MenuId_State_LoadOther,	Menu_LoadStateOther_Click );
 
 	ConnectMenuRange(MenuId_State_Load01+1, 10, Menu_LoadStates_Click);
 	ConnectMenu( MenuId_State_LoadBackup,	Menu_LoadStates_Click );
 	
 
-	//ConnectMenu( MenuId_State_SaveOther,	Menu_SaveStateOther_Click );
+	ConnectMenu( MenuId_State_SaveOther,	Menu_SaveStateOther_Click );
 
 	ConnectMenuRange(MenuId_State_Save01+1, 10, Menu_SaveStates_Click);
 
