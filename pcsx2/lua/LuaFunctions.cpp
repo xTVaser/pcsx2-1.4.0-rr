@@ -220,7 +220,7 @@ static int joypad_set(lua_State *L)
 {
 	// Reads the joypads as inputted by the user
 	int which = luaL_checkinteger(L, 1);
-	if (which < 0 || 2 < which)
+	if (which < 0 || 2 <= which)
 	{
 		luaL_error(L, "Invalid input port (valid range 0-1, specified %d)", which);
 	}
@@ -251,6 +251,7 @@ static int joypad_set(lua_State *L)
 		lua_pop(L, 1);
 	}
 	pad.setAnalogKeys(which, analogKeys);
+	g_Lua.setNowFramePadData(pad);
 	return 0;
 }
 
