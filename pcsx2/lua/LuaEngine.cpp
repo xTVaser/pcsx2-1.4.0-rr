@@ -72,7 +72,7 @@ void LuaEngine::Resume(void)
 	int result = lua_resume(Lthread, NULL, 0);
 	if (result == LUA_OK) {
 		// lua script end
-		Close();
+		// But we don't stop the script
 		return;
 	}
 	else if (result == LUA_YIELD) {
