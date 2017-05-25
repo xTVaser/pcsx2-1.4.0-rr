@@ -2,6 +2,7 @@
 
 #include "LuaEngine.h"
 #include "LuaFunctions.h"
+#include "LuaManager.h"
 
 #include "LuaFrame.h"	// use "LuaFrame"
 #include "App.h"	// use "LuaFrame"
@@ -68,11 +69,13 @@ void LuaEngine::Resume(void)
 	if (Lthread == NULL)return;
 	if ( state != RESUME )return;
 	
+	g_Lua.SetCanModifyController(true);
 	setState(RUNNING);
 	int result = lua_resume(Lthread, NULL, 0);
 	if (result == LUA_OK) {
 		// lua script end
 		// But we don't stop the script
+		g_Lua.SetCanModifyController(false);
 		return;
 	}
 	else if (result == LUA_YIELD) {

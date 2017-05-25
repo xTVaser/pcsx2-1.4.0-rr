@@ -67,6 +67,7 @@ oprofile_data/
 /bin/dumps
 /bin/help
 /bin/inis
+/bin/inis_1.4.0
 /bin/logs
 /bin/memcards
 /bin/plugins
@@ -110,3 +111,14 @@ oprofile_data/
 /tools/bin
 /tools/GSDumpGUI/bin
 /tools/GSDumpGUI/obj
+/.vs/PCSX2_suite/v15
+/.vs/PCSX2_suite/v15
+/.vs/PCSX2_suite/v15/ipch/PCSX2-b8619af6/PCSX2-695583e5.ipch
+/.vs/PCSX2_suite/v15/Solution.VC.db-shm
+*.db
+/.vs/PCSX2_suite/v15/Solution.VC.db-wal
+/.vs/PCSX2_suite/v15/Solution.VC.db-shm
+/.vs/PCSX2_suite/v15/Solution.VC.db
+/.vs/PCSX2_suite/v15/Browse.VC.opendb
+/.vs/PCSX2_suite/v15/ipch/PCSX2-b8619af6/PCSX2-695583e5.ipch
+/.vs/PCSX2_suite/v15/ipch/PCSX2-b8619af6/PCSX2-695583e5.ipch

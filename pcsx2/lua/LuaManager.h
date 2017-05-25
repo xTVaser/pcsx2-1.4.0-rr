@@ -9,12 +9,13 @@
 
 class LuaManager {
 public:
-	LuaManager() {}
+	LuaManager();
 	~LuaManager() {}
 public:
 
 	void FrameBoundary();
 
+	void SetCanModifyController(bool can);
 	void ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[]);
 	PadData & getNowFramePadData();
 	void setNowFramePadData(const PadData & pad);
@@ -28,6 +29,7 @@ public:
 
 private:
 	LuaEngine lua;
+	bool fSetFrameKey;
 
 
 };
