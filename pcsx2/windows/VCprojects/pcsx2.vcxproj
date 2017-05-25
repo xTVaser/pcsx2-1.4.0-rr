@@ -467,6 +467,8 @@
     <ClCompile Include="..\..\TAS\MovieControle.cpp" />
     <ClCompile Include="..\..\TAS\PadData.cpp" />
     <ClCompile Include="..\..\TAS\KeyMovieOnFile.cpp" />
+    <ClCompile Include="..\..\TAS\TASInputManager.cpp" />
+    <ClCompile Include="..\..\TAS\VirtualPad.cpp" />
     <ClCompile Include="..\..\Utilities\FileUtils.cpp" />
     <ClCompile Include="..\..\Dump.cpp" />
     <ClCompile Include="..\..\x86\iMisc.cpp" />
@@ -759,6 +761,8 @@
     <ClInclude Include="..\..\TAS\MovieControle.h" />
     <ClInclude Include="..\..\TAS\PadData.h" />
     <ClInclude Include="..\..\TAS\KeyMovieOnFile.h" />
+    <ClInclude Include="..\..\TAS\TASInputManager.h" />
+    <ClInclude Include="..\..\TAS\VirtualPad.h" />
     <ClInclude Include="..\..\Utilities\AsciiFile.h" />
     <ClInclude Include="..\..\Elfheader.h" />
     <ClInclude Include="..\..\CDVD\IsoFileFormats.h" />

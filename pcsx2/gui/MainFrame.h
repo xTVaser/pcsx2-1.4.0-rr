@@ -112,7 +112,7 @@ protected:
 	wxMenu&			m_menuMisc;
 	wxMenu&			m_menuDebug;
 	wxMenu&			m_menuMovieDlg;	//--TAS--//
-	wxMenu&			m_menuLuaDlg;	//--LuaEngine--//
+	wxMenu&			m_menuTools;	//--LuaEngine--//
 
 	wxMenu&			m_LoadStatesSubmenu;
 	wxMenu&			m_SaveStatesSubmenu;
@@ -213,6 +213,9 @@ protected:
 	//--LuaEngine--//
 	void Menu_Lua_Open_Click(wxCommandEvent &event);
 	//------------//
+
+	// Virtual Pad
+	void Menu_VirtualPad_Open(wxCommandEvent &event);
 
 	void _DoBootCdvd();
 	bool _DoSelectIsoBrowser( wxString& dest );

@@ -31,6 +31,7 @@
 #include "Utilities/IniInterface.h"
 
 #include "TAS/KeyMovie.h"//--TAS--//
+#include "TAS/VirtualPad.h"
 
 using namespace Dialogs;
 
@@ -676,3 +677,11 @@ void MainEmuFrame::Menu_KeyMovie_OpenKeyEditor(wxCommandEvent &event)
 }
 
 //------//
+
+// TAS Input
+void MainEmuFrame::Menu_VirtualPad_Open(wxCommandEvent &event)
+{
+	VirtualPad *vp = wxGetApp().GetVirtualPadPtr();
+	if (vp)
+		vp->Show();
+}

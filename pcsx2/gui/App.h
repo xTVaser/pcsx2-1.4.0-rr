@@ -26,6 +26,7 @@
 #include "AppCoreThread.h"
 #include "RecentIsoList.h"
 #include "TAS/KeyEditor.h"//--TAS--//
+#include "TAS/VirtualPad.h"
 
 class DisassemblyDialog;
 
@@ -177,6 +178,9 @@ enum MenuIdentifiers
 	//--LuaEngine--//
 	MenuId_Lua_Open,
 	//------------//
+
+	// VirtualPad
+	MenuID_VirtualPad,
 };
 
 namespace Exception
@@ -511,6 +515,7 @@ protected:
 	wxWindowID			m_id_Disassembler;
 	wxWindowID			m_id_LuaFrame;//--LuaEngine--//
 	wxWindowID			m_id_KeyEditor;//--TAS--//
+	wxWindowID			m_id_VirtualPad;
 
 	wxKeyEvent			m_kevt;
 
@@ -537,6 +542,9 @@ public:
 	DisassemblyDialog*	GetDisassemblyPtr() const	{ return (DisassemblyDialog*)wxWindow::FindWindowById(m_id_Disassembler); }
 	LuaFrame*			GetLuaFramePtr() const { return (LuaFrame*)wxWindow::FindWindowById(m_id_LuaFrame); }//--LuaEngine--//
 	KeyEditor *			GetKeyEditorPtr() const		{ return (KeyEditor*)wxWindow::FindWindowById(m_id_KeyEditor); }//--TAS--//
+	VirtualPad *		GetVirtualPadPtr() const {
+		return (VirtualPad*)wxWindow::FindWindowById(m_id_VirtualPad);
+	}
 
 	void enterDebugMode();
 	void leaveDebugMode();

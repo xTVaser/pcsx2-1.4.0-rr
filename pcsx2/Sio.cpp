@@ -20,7 +20,7 @@
 #include "sio_internal.h"
 
 #include "TAS/KeyMovie.h"	//--TAS--//
-#include "lua/LuaManager.h"	//--LuaEngine--//
+#include "TAS/TASInputManager.h"	//--LuaEngine--//
 
 _sio sio;
 _mcd mcds[2][4];
@@ -179,7 +179,7 @@ SIO_WRITE sioWriteController(u8 data)
 		g_KeyMovie.ControllerInterrupt(data, sio.port,sio.bufCount,sio.buf);//--TAS--//
 		//--LuaEngine--//
 		if (g_KeyMovie.isInterruptFrame()) {
-			g_Lua.ControllerInterrupt(data, sio.port, sio.bufCount, sio.buf);
+			g_TASInput.ControllerInterrupt(data, sio.port, sio.bufCount, sio.buf);
 		}
 		//------------//
 

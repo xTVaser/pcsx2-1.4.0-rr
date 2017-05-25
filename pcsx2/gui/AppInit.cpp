@@ -31,6 +31,7 @@
 #include <wx/stdpaths.h>
 
 #include "lua/LuaFrame.h"//--LuaEngine--//
+#include "TAS/VirtualPad.h"
 
 using namespace pxSizerFlags;
 
@@ -81,6 +82,9 @@ void Pcsx2App::OpenMainFrame()
 	KeyEditor* keyEditor = new KeyEditor(mainFrame);
 	m_id_KeyEditor = keyEditor->GetId();
 	//-------//
+	// Virtual Pad
+	VirtualPad* virtualPad = new VirtualPad(mainFrame);
+	m_id_VirtualPad = virtualPad->GetId();
 
 	if (g_Conf->EmuOptions.Debugger.ShowDebuggerOnStart)
 		disassembly->Show();

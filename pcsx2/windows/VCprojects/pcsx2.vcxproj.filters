@@ -910,6 +910,12 @@
     <ClCompile Include="..\..\lua\LuaFunctions.cpp">
       <Filter>lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\TAS\VirtualPad.cpp">
+      <Filter>TAS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\TAS\TASInputManager.cpp">
+      <Filter>TAS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Patch.h">
@@ -1370,6 +1376,12 @@
     </ClInclude>
     <ClInclude Include="..\..\lua\LuaFunctions.h">
       <Filter>lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\TAS\VirtualPad.h">
+      <Filter>TAS</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\TAS\TASInputManager.h">
+      <Filter>TAS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
