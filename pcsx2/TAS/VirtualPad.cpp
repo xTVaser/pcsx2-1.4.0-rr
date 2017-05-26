@@ -21,13 +21,14 @@ enum
 	ID_TRIANGLE,
 	ID_START,
 	ID_SELECT,
-	// Analog
+	// Analog (sliders)
 	ID_L_UPDOWN,
 	ID_L_RIGHTLEFT,
-	ID_L_UPDOWN_TEXT,
-	ID_L_RIGHTLEFT_TEXT,
 	ID_R_UPDOWN,
 	ID_R_RIGHTLEFT,
+	// Analog (TextCtrl)
+	ID_L_UPDOWN_TEXT,
+	ID_L_RIGHTLEFT_TEXT,
 	ID_R_UPDOWN_TEXT,
 	ID_R_RIGHTLEFT_TEXT,
 };
@@ -86,14 +87,26 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	w = 200;
 	h = 30;
 	space = 3;
-	l_upDown = new wxSlider(panel, ID_L_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w), wxSL_VERTICAL | wxSL_INVERSE | wxSL_LEFT);
+	l_upDown = new wxSlider(panel, ID_L_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w),
+			wxSL_VERTICAL | wxSL_INVERSE | wxSL_LEFT);
 	l_rightLeft = new wxSlider(panel, ID_L_RIGHTLEFT, 127, 0, 255, wxPoint(x, y + w + space), wxSize(w, h), wxSL_HORIZONTAL);
 
-	l_upDownText = new wxSpinCtrl(panel, ID_L_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20), wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
-	l_rightLeftText = new wxSpinCtrl(panel, ID_L_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20), wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
+	l_upDownText = new wxSpinCtrl(panel, ID_L_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20),
+			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
+	l_rightLeftText = new wxSpinCtrl(panel, ID_L_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20),
+			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
 
+	// Handling buttons (normal keys)
 	for (int i = ID_UP; i <= ID_SELECT; i++)
 		Bind(wxEVT_TOGGLEBUTTON, &VirtualPad::OnClick, this, i);
+
+	// Handling TextCtrl changes (analog keys)
+	for (int i = ID_L_UPDOWN_TEXT; i <= ID_R_RIGHTLEFT_TEXT; i++)
+		Bind(wxEVT_SPINCTRL, &VirtualPad::OnTextCtrlChange, this, i);
+
+	// Handling Slider changes (analog keys)
+	for (int i = ID_L_UPDOWN; i <= ID_R_RIGHTLEFT; i++)
+		Bind(wxEVT_SLIDER, &VirtualPad::OnSliderMove, this, i);
 }
 
 void VirtualPad::UpdateInputs() const
@@ -166,6 +179,41 @@ void VirtualPad::OnClick(wxCommandEvent & event)
 		break;
 	default:
 		Console.WriteLn("Virtual Pad Error: Unknown toggle button pressed");
+		break;
+	}
+}
+
+void VirtualPad::OnTextCtrlChange(wxSpinEvent & event)
+{
+	switch (event.GetId())
+	{
+	case ID_L_UPDOWN_TEXT:
+		l_upDown->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("l_updown", event.GetInt());
+		break;
+	case ID_L_RIGHTLEFT_TEXT:
+		l_rightLeft->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("l_leftright", event.GetInt());
+		break;
+	default:
+		Console.WriteLn("Virtual Pad Error: Unknow TextCtrl change");
+		break;
+	}
+}
+
+void VirtualPad::OnSliderMove(wxCommandEvent & event)
+{
+	switch (event.GetId())
+	{
+	case ID_L_UPDOWN:
+		l_upDownText->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("l_updown", event.GetInt());
+		break;
+	case ID_L_RIGHTLEFT:
+		l_rightLeftText->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("l_leftright", event.GetInt());
+		break;
+	default:
 		break;
 	}
 }

@@ -1,73 +1,71 @@
 # pcsx2-1.4.0-rr
-[pcsx2-1.4.0](https://github.com/PCSX2/pcsx2)‚ÉTASì¬‚Ì‚½‚ß‚Ì‹@”\‚ğ’Ç‰Á‚µ‚½”ñŒö®ƒGƒ~ƒ…ƒŒ[ƒ^‚Å‚·B  
-pcsx2-rr(<https://code.google.com/archive/p/pcsx2-rr/>)‚ğQl‚É‚µ‚Ä‚¢‚Ü‚·B  
-‚½‚¾A‚¾‚¢‚Ô’†g‚ª•Ï‚í‚Á‚Ä‚¨‚è’Pƒ‚Èƒ}[ƒW‚Í‚Å‚«‚È‚©‚Á‚½‚Ì‚Å‚©‚È‚èƒ\[ƒXƒR[ƒh‚Í•Ï‚í‚Á‚Ä‚¢‚Ü‚·B  
+This README proposes a translation (and an update of certain parts, of course) of the original README (be wary that it may not be accurate as I don't speak nor understand Japanese and most of the translation comes from Google Translation). Consider this project as version 2 of PCSX2-rr.<br>
+This informal emulator adds features needed to create a TAS to [pcsx2-1.4.0](https://github.com/PCSX2/pcsx2).<br>
+This is inspired by pcsx2-rr(<https://code.google.com/archive/p/pcsx2-rr/>). However, since the content has changed a lot and simple merging can not be done, the source code has changed considerably.
   
 
 # TAS
-ÀÛ‚Éì‚Á‚Ä‚İ‚½TAS‚Í‚±‚¿‚ç‚Ì“®‰æ‚Æ‚È‚è‚Ü‚·B(ì¬‚Í–{ƒc[ƒ‹v1.0‚Ì‚Ì‚à‚Ì‚Å‚·)  
-[yTASzƒ`ƒ…ƒEƒŠƒbƒv part0(WIP)ypcsx2-1.4.0-rrz(ƒjƒRƒjƒR)](http://www.nicovideo.jp/watch/sm30385451)  
-[yTASzƒ`ƒ…ƒEƒŠƒbƒv part0(WIP)ypcsx2-1.4.0-rrz(youtube)](https://youtu.be/Ib2MnRfCCzc)  
+Here are some TAS examples (made with the original pcsx2-rr v.1):
+* [ï¿½yTASï¿½zï¿½`ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½bï¿½v part0(WIP)ï¿½ypcsx2-1.4.0-rrï¿½z(ï¿½jï¿½Rï¿½jï¿½R)](http://www.nicovideo.jp/watch/sm30385451)  
+* [ï¿½yTASï¿½zï¿½`ï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½bï¿½v part0(WIP)ï¿½ypcsx2-1.4.0-rrï¿½z(youtube)](https://youtu.be/Ib2MnRfCCzc)  
 
 
-# desync‚É‚Â‚¢‚Ä
-Œ»ó•ª‚©‚Á‚Ä‚¢‚é”ÍˆÍ‚Å[ƒL[ƒ€[ƒr[ì¬‘z’èè‡](https://github.com/pocokhc/pcsx2-1.4.0-rr/wiki#%E3%82%AD%E3%83%BC%E3%83%A0%E3%83%BC%E3%83%93%E3%83%BC%E4%BD%9C%E6%88%90%E6%83%B3%E5%AE%9A%E6%89%8B%E9%A0%86201749%E6%9B%B4%E6%96%B0)‚ğupdate‚µ‚Ü‚µ‚½B(2017/4/9)  
+# About desync
+See this [wiki page](https://github.com/pocokhc/pcsx2-1.4.0-rr/wiki#%E3%82%AD%E3%83%BC%E3%83%A0%E3%83%BC%E3%83%93%E3%83%BC%E4%BD%9C%E6%88%90%E6%83%B3%E5%AE%9A%E6%89%8B%E9%A0%86201749%E6%9B%B4%E6%96%B0) (in Japanese).
 
-# ƒ_ƒEƒ“ƒ[ƒh
-windows10‚Ì‚İƒrƒ‹ƒhŒã‚ÌÀsƒtƒ@ƒCƒ‹‚ğ’u‚¢‚Ä‚¨‚«‚Ü‚·B  
-[pcsx2-1.4.0-rr](https://github.com/pocokhc/pcsx2-1.4.0-rr/releases)  
+# Download
+You can download the Windows 10 executable from [here](TODO)
   
-‚Ü‚½A“®ì‚³‚¹‚é‚½‚ß‚ÉˆÈ‰º‚ª•K—v‚Å‚·B  
-You need the Visual C++ 2015 x86 Redistributable for this version to work. Download it [HERE](https://www.microsoft.com/en-us/download/details.aspx?id=48145)  
+You will need the followings to run the executable:
+* Visual C++ 2015 x86 Redistributable. Download it [HERE](https://www.microsoft.com/en-us/download/details.aspx?id=48145)  
   
-“®ìŠÂ‹«‚Íwindows10‚Ì‚İŠm”F‚µ‚Ä‚¢‚Ü‚·B  
-‚»‚Ì‘¼‚ÌŠÂ‹«‚ÍŒö®‚Å‘Î‰‚µ‚Ä‚¢‚éOS‚Åg—p‚Å‚«‚Ü‚·B  
+This was tested only on Windows 10, but the application should work on the other OS supported by PCSX2.
+
+# Added features
+* KeyMovie recording
+* Pause/Unpause/FrameAdvance
+* Lua (this version does not close the Lua engine when the end of the file is reached)
+* An editor for KeyMovie files
   
+For more details, see the wikis:
+* [PCSX2-rr v1](https://github.com/pocokhc/pcsx2-1.4.0-rr/wiki) (in Japanese)
+* [PCSX2-rr v2](https://github.com/DocSkellington/pcsx2-1.4.0-rr/wiki) (only explains changes)
 
-# ’Ç‰Á‹@”\
-* KeyMovie˜^‰æ‹@”\  
-* Pause/Unpase/FrameAdvance‹@”\  
-* Lua  
-* KeyMovie‚ÌEditor‹@”\  
+
+
+# How to build (Windows 10)
+You can build this version as you would build the original PCSX2. It is easier with Visual Studio 2015 (works with 2017 version as well).
   
-Še‹@”\‚ÌÚ×‚Í[wiki](https://github.com/pocokhc/pcsx2-1.4.0-rr/wiki)‚ğ‚²——‚­‚¾‚³‚¢B  
-
-
-
-# ƒrƒ‹ƒh•û–@‚É‚Â‚¢‚Ä(windows10)
-Œö®‚Æ“¯‚¶ƒrƒ‹ƒh•û–@‚Å‚·B  
-  
-—pˆÓ‚·‚é‚à‚Ì  
+ï¿½pï¿½Ó‚ï¿½ï¿½ï¿½ï¿½ï¿½  
 1. Visual Studio Comunnity 2015(<https://www.visualstudio.com/vs/community/>)  
-@¦ƒfƒtƒHƒ‹ƒgİ’è‚¾‚ÆC++‚ª‘«‚è‚È‚¢‚Ì‚ÅƒJƒXƒ^ƒ€¨ƒvƒƒOƒ‰ƒ~ƒ“ƒOŒ¾Œê¨Visual C++‚Éƒ`ƒFƒbƒN‚ğ“ü‚ê‚ÄƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚­‚¾‚³‚¢B  
+ï¿½@ï¿½ï¿½ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½İ’è‚¾ï¿½ï¿½C++ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½Ì‚ÅƒJï¿½Xï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½~ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ê¨Visual C++ï¿½Éƒ`ï¿½Fï¿½bï¿½Nï¿½ï¿½ï¿½ï¿½ï¿½ÄƒCï¿½ï¿½ï¿½Xï¿½gï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B  
 2. DirectX Software Development Kit (June 2010)(<https://www.microsoft.com/en-us/download/details.aspx?id=6812>)  
-@¦ƒfƒtƒHƒ‹ƒgİ’è‚ÌƒCƒ“ƒXƒg[ƒ‹‚Å‚¨‚‹‚Å‚·B’Ç‰Á‚Å.NET Framework3.5‚ª•K—v‚È‚Ì‚Å’Ç‰Á‚µ‚Ü‚·‚©H‚Æ•·‚©‚ê‚éê‡‚ÍƒCƒ“ƒXƒg[ƒ‹‚µ‚Ä‚¨‚«‚Ü‚·B  
-3. ƒ\[ƒXƒR[ƒh“à‚ÌuPCSX2_suite.slnv‚ğŠJ‚«Aƒrƒ‹ƒh‚ğ‚µ‚Ü‚·B  
+ï¿½@ï¿½ï¿½ï¿½fï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½İ’ï¿½ÌƒCï¿½ï¿½ï¿½Xï¿½gï¿½[ï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½Å‚ï¿½ï¿½Bï¿½Ç‰ï¿½ï¿½ï¿½.NET Framework3.5ï¿½ï¿½ï¿½Kï¿½vï¿½È‚Ì‚Å’Ç‰ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½ï¿½Hï¿½Æ•ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê‡ï¿½ÍƒCï¿½ï¿½ï¿½Xï¿½gï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B  
+3. ï¿½\ï¿½[ï¿½Xï¿½Rï¿½[ï¿½hï¿½ï¿½ÌuPCSX2_suite.slnï¿½vï¿½ï¿½Jï¿½ï¿½ï¿½Aï¿½rï¿½ï¿½ï¿½hï¿½ï¿½Ü‚ï¿½ï¿½B  
   
-ƒ_ƒEƒ“ƒ[ƒh‚¨‚æ‚Ñƒrƒ‹ƒh‚ÉŠÖ‚µ‚Ä‚Í[windows10](https://www.microsoft.com/ja-jp/software-download/windows10)‚ğVMã‚ÅV‹K‚ÉƒCƒ“ƒXƒg[ƒ‹‚µ‚½ó‘Ô‚Å‹N“®‚Å‚«‚½‚±‚Æ‚ğŠm”F‚µ‚Ä‚¢‚Ü‚·B  
+ï¿½_ï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½Ñƒrï¿½ï¿½ï¿½hï¿½ÉŠÖ‚ï¿½ï¿½Ä‚ï¿½[windows10](https://www.microsoft.com/ja-jp/software-download/windows10)ï¿½ï¿½VMï¿½ï¿½ÅVï¿½Kï¿½ÉƒCï¿½ï¿½ï¿½Xï¿½gï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚Å‹Nï¿½ï¿½ï¿½Å‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½mï¿½Fï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½B  
 
 
-# ƒ\[ƒXƒR[ƒh‚Ì•ÏX‰ÓŠ
-Œ³‚ÌƒR[ƒh‚©‚ç•ÏX‚µ‚Ä‚¢‚é‰ÓŠ‚É‚Í‚·‚×‚Ä‰º‹LƒRƒƒ“ƒg‚ª“ü‚Á‚Ä‚¢‚Ü‚·B  
+# ï¿½\ï¿½[ï¿½Xï¿½Rï¿½[ï¿½hï¿½Ì•ÏXï¿½Óï¿½
+ï¿½ï¿½ï¿½ÌƒRï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ÏXï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Óï¿½ï¿½É‚Í‚ï¿½ï¿½×‚Ä‰ï¿½ï¿½Lï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½Ü‚ï¿½ï¿½B  
 //--TAS--//  
 //--LuaEngine--//  
 //--TASKeyEditor--//  
   
-‚Ü‚½AV‹K’Ç‰Á‚µ‚½ƒtƒ@ƒCƒ‹‚ÍˆÈ‰ºƒfƒBƒŒƒNƒgƒŠ‚Å‚·B  
+ï¿½Ü‚ï¿½ï¿½Aï¿½Vï¿½Kï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½ÍˆÈ‰ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½Nï¿½gï¿½ï¿½ï¿½Å‚ï¿½ï¿½B  
 ./pcsx2/TAS/  
 ./pcsx2/lua/  
 ./3rdparty/lua/  
   
 
-# ƒRƒƒ“ƒg
-‚Ğ‚Æ‚Ü‚¸v3.0‚ÅŠJ”­‚Í~‚ß‚ÄTAS§ì‚ÉˆÚ‚è‚½‚¢‚Æv‚¢‚Ü‚·B  
-TAS‚ğì¬‚µ‚Ä‚¢‚­‚¤‚¦‚Å‹C‚É‚È‚Á‚½“_‚âƒoƒO‚ªo‚ê‚Î‘Î‰‚Í‚µ‚Ä‚¢‚­—\’è‚Å‚·B  
-“Á‚ÉLua‚Í‚ ‚Ü‚èƒeƒXƒg‚µ‚Ä‚¢‚È‚¢‚Ì‚ÅcAƒoƒO‚ªo‚ê‚ÎLua‚Ìg—p‚ğT‚¦‚Ä‚à‚ç‚¦‚ê‚Î(‚¦‚Á  
+# ï¿½Rï¿½ï¿½ï¿½ï¿½ï¿½g
+ï¿½Ğ‚Æ‚Ü‚ï¿½v3.0ï¿½ÅŠJï¿½ï¿½ï¿½Í~ï¿½ß‚ï¿½TASï¿½ï¿½ï¿½ï¿½ÉˆÚ‚è‚½ï¿½ï¿½ï¿½Ævï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B  
+TASï¿½ï¿½ì¬ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å‹Cï¿½É‚È‚ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½oï¿½Oï¿½ï¿½ï¿½oï¿½ï¿½Îï¿½ï¿½ï¿½ï¿½Î‰ï¿½ï¿½Í‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½Å‚ï¿½ï¿½B  
+ï¿½ï¿½ï¿½ï¿½Luaï¿½Í‚ï¿½ï¿½Ü‚ï¿½eï¿½Xï¿½gï¿½ï¿½ï¿½Ä‚ï¿½ï¿½È‚ï¿½ï¿½Ì‚Åcï¿½Aï¿½oï¿½Oï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Luaï¿½Ìgï¿½pï¿½ï¿½Tï¿½ï¿½ï¿½Ä‚ï¿½ç‚¦ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½  
 
 
 
 ------------------------
-**Licence**  
-Œö®‚Ìƒ‰ƒCƒZƒ“ƒX’Ê‚è‚Å‚·B  
-[License GNU LGPL](http://www.gnu.org/licenses/lgpl.html)  
+# Licence
+Same as PCSX2: [License GNU LGPL](http://www.gnu.org/licenses/lgpl.html)  
 

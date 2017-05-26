@@ -13,6 +13,8 @@ public:
 	*/
 	void ToggleButton(wxString button);
 
+	void UpdateAnalog(wxString key, int value);
+
 protected:
 	PadData pad;
 };

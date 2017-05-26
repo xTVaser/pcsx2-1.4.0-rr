@@ -27,6 +27,8 @@ protected:
 	void OnClose(wxCloseEvent &event);
 
 	void OnClick(wxCommandEvent &event);
+	void OnTextCtrlChange(wxSpinEvent &event);
+	void OnSliderMove(wxCommandEvent &event);
 
 	wxDECLARE_EVENT_TABLE();
 };
