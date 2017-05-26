@@ -18,10 +18,11 @@ enum
 	ID_X,
 	ID_CIRCLE,
 	ID_TRIANGLE,
+	ID_START,
+	ID_SELECT,
 };
 
 wxBEGIN_EVENT_TABLE(VirtualPad, wxFrame)
-	EVT_TOGGLEBUTTON(wxID_ANY, VirtualPad::OnClick)
 	EVT_CLOSE(VirtualPad::OnClose)
 wxEND_EVENT_TABLE()
 
@@ -31,7 +32,7 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	// Global
 	wxPanel *panel = new wxPanel(this, wxID_ANY);
 	int x = 2, y = 2;
-	int w = 40, h = 35;
+	int w = 50, h = 35;
 	int space = 5;
 
 	// Left triggers
@@ -45,6 +46,32 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	down = new wxToggleButton(panel, ID_DOWN, _("Down"), wxPoint(x + w + space, y + 2 * h + 2 * space), wxSize(w, h));
 	left = new wxToggleButton(panel, ID_LEFT, _("Left"), wxPoint(x, y + h + 5), wxSize(w, h));
 	right = new wxToggleButton(panel, ID_RIGHT, _("Right"), wxPoint(x + 2 * w + 2 * space, y + h + space), wxSize(w, h));
+
+	// Right triggers
+	x = 400;
+	y = 2;
+	r2 = new wxToggleButton(panel, ID_R2, L"R2", wxPoint(x, y), wxSize(w, h));
+	r1 = new wxToggleButton(panel, ID_R1, L"R1", wxPoint(x, y + h + space), wxSize(w, h));
+
+	// Action buttons
+	x = 300;
+	y = 100;
+	triangle = new wxToggleButton(panel, ID_TRIANGLE, _("Triangle"), wxPoint(x + w + space, y), wxSize(w, h));
+	xButton = new wxToggleButton(panel, ID_X, _("X"), wxPoint(x + w + space, y + 2 * h + 2 * space), wxSize(w, h));
+	square = new wxToggleButton(panel, ID_SQUARE, _("Square"), wxPoint(x, y + h + 5), wxSize(w, h));
+	circle = new wxToggleButton(panel, ID_CIRCLE, _("Circle"), wxPoint(x + 2 * w + 2 * space, y + h + space), wxSize(w, h));
+
+	// L3, R3
+	y = 20;
+	l3 = new wxToggleButton(panel, ID_L3, L"L3", wxPoint(150, y), wxSize(w, h));
+	r3 = new wxToggleButton(panel, ID_R3, L"R3", wxPoint(250, y), wxSize(w, h));
+
+	// Start, select
+	select = new wxToggleButton(panel, ID_SELECT, _("Select"), wxPoint(150, y + h + space), wxSize(w, h));
+	start = new wxToggleButton(panel, ID_START, _("Start"), wxPoint(250, y + h + space), wxSize(w, h));
+
+	for (int i = ID_UP; i <= ID_SELECT; i++)
+		Bind(wxEVT_TOGGLEBUTTON, &VirtualPad::OnClick, this, i);
 }
 
 void VirtualPad::UpdateInputs() const
@@ -70,8 +97,53 @@ void VirtualPad::OnClick(wxCommandEvent & event)
 	case ID_UP:
 		g_TASInput.ToggleButton("up");
 		break;
+	case ID_DOWN:
+		g_TASInput.ToggleButton("down");
+		break;
+	case ID_LEFT:
+		g_TASInput.ToggleButton("left");
+		break;
+	case ID_RIGHT:
+		g_TASInput.ToggleButton("right");
+		break;
+	case ID_L1:
+		g_TASInput.ToggleButton("l1");
+		break;
+	case ID_L2:
+		g_TASInput.ToggleButton("l2");
+		break;
+	case ID_L3:
+		g_TASInput.ToggleButton("l3");
+		break;
+	case ID_R1:
+		g_TASInput.ToggleButton("r1");
+		break;
+	case ID_R2:
+		g_TASInput.ToggleButton("r2");
+		break;
+	case ID_R3:
+		g_TASInput.ToggleButton("r3");
+		break;
+	case ID_SQUARE:
+		g_TASInput.ToggleButton("square");
+		break;
+	case ID_X:
+		g_TASInput.ToggleButton("x");
+		break;
+	case ID_TRIANGLE:
+		g_TASInput.ToggleButton("triangle");
+		break;
+	case ID_CIRCLE:
+		g_TASInput.ToggleButton("circle");
+		break;
+	case ID_START:
+		g_TASInput.ToggleButton("start");
+		break;
+	case ID_SELECT:
+		g_TASInput.ToggleButton("select");
+		break;
 	default:
-		Console.WriteLn("Shouldn't occur");
+		Console.WriteLn("Virtual Pad Error: Unknown toggle button pressed");
 		break;
 	}
 }

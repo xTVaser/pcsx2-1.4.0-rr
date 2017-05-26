@@ -15,7 +15,7 @@ protected:
 	wxToggleButton *up, *down, *left, *right;
 	wxToggleButton *r1, *r2, *r3;
 	wxToggleButton *l1, *l2, *l3;
-	wxToggleButton *square, circle, x, triangle;
+	wxToggleButton *square, *circle, *xButton, *triangle;
 	wxToggleButton *select, *start;
 
 protected:

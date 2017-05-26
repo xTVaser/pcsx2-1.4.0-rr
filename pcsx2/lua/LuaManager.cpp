@@ -26,7 +26,6 @@ void LuaManager::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[
 
 	if (fSetFrameKey)
 	{
-		Console.WriteLn("Overwrite");
 		buf[BufCount] = nowFramePadData.buf[port][bufIndex];
 	}
 	else {
@@ -35,7 +34,6 @@ void LuaManager::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[
 
 	// turn end
 	if (BufCount == 7) {
-		Console.WriteLn("change");
 		fSetFrameKey = false;
 	}
 }

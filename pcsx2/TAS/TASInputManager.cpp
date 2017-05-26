@@ -15,12 +15,18 @@ void TASInputManager::ControllerInterrupt(u8 & data, u8 & port, u16 & BufCount, 
 
 	g_Lua.ControllerInterrupt(data, port, BufCount, buf);
 
-	/*
 	int bufIndex = BufCount - 3;
-	if (0 < bufIndex || bufIndex < 6)
+	if (bufIndex < 0 || 6 < bufIndex)
 		return;
-	Console.WriteLn("KOJOJ");
-	buf[BufCount] = pad.buf[port][bufIndex];
+	// Normal keys
+	if (bufIndex <= 1)
+		buf[BufCount] = buf[BufCount] & pad.buf[port][bufIndex];
+		//buf[BufCount] = ~(~buf[BufCount] | ~pad.buf[port][bufIndex]);
+	/*
+	// Normal keys OR analog keys
+	if ((bufIndex <= 1 && pad.buf[port][bufIndex] != 255)
+		|| (bufIndex > 1 && pad.buf[port][bufIndex] != 127))
+		buf[BufCount] = pad.buf[port][bufIndex];
 	*/
 }
 
