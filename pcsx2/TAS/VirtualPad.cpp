@@ -38,7 +38,7 @@ wxBEGIN_EVENT_TABLE(VirtualPad, wxFrame)
 wxEND_EVENT_TABLE()
 
 VirtualPad::VirtualPad(wxWindow * parent)
-	: wxFrame(parent, wxID_ANY, L"Virtual Pad")
+	: wxFrame(parent, wxID_ANY, L"Virtual Pad", wxDefaultPosition, wxSize(550, 500), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
 	// Global
 	wxPanel *panel = new wxPanel(this, wxID_ANY);
@@ -59,13 +59,13 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	right = new wxToggleButton(panel, ID_RIGHT, _("Right"), wxPoint(x + 2 * w + 2 * space, y + h + space), wxSize(w, h));
 
 	// Right triggers
-	x = 400;
+	x = 450;
 	y = 2;
 	r2 = new wxToggleButton(panel, ID_R2, L"R2", wxPoint(x, y), wxSize(w, h));
 	r1 = new wxToggleButton(panel, ID_R1, L"R1", wxPoint(x, y + h + space), wxSize(w, h));
 
 	// Action buttons
-	x = 300;
+	x = 350;
 	y = 100;
 	triangle = new wxToggleButton(panel, ID_TRIANGLE, _("Triangle"), wxPoint(x + w + space, y), wxSize(w, h));
 	xButton = new wxToggleButton(panel, ID_X, _("X"), wxPoint(x + w + space, y + 2 * h + 2 * space), wxSize(w, h));
@@ -75,11 +75,11 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	// L3, R3
 	y = 20;
 	l3 = new wxToggleButton(panel, ID_L3, L"L3", wxPoint(150, y), wxSize(w, h));
-	r3 = new wxToggleButton(panel, ID_R3, L"R3", wxPoint(250, y), wxSize(w, h));
+	r3 = new wxToggleButton(panel, ID_R3, L"R3", wxPoint(300, y), wxSize(w, h));
 
 	// Start, select
 	select = new wxToggleButton(panel, ID_SELECT, _("Select"), wxPoint(150, y + h + space), wxSize(w, h));
-	start = new wxToggleButton(panel, ID_START, _("Start"), wxPoint(250, y + h + space), wxSize(w, h));
+	start = new wxToggleButton(panel, ID_START, _("Start"), wxPoint(300, y + h + space), wxSize(w, h));
 
 	// Left analog
 	x = 5;
@@ -94,6 +94,17 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	l_upDownText = new wxSpinCtrl(panel, ID_L_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20),
 			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
 	l_rightLeftText = new wxSpinCtrl(panel, ID_L_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20),
+			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
+
+	// Right analog
+	x = 275;
+	r_upDown = new wxSlider(panel, ID_R_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w),
+			wxSL_VERTICAL | wxSL_INVERSE | wxSL_LEFT);
+	r_rightLeft = new wxSlider(panel, ID_R_RIGHTLEFT, 127, 0, 255, wxPoint(x, y + w + space), wxSize(w, h), wxSL_HORIZONTAL);
+
+	r_upDownText = new wxSpinCtrl(panel, ID_R_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20),
+			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
+	r_rightLeftText = new wxSpinCtrl(panel, ID_R_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20),
 			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
 
 	// Handling buttons (normal keys)
@@ -120,8 +131,18 @@ void VirtualPad::UpdateInputs() const
 	pad.setNormalKeys(0, normalKeys);
 }
 
+bool VirtualPad::Show(bool show)
+{
+	if (!wxFrame::Show(show))
+		return false;
+	if (show)
+		g_TASInput.SetVirtualPadReading(true);
+	return true;
+}
+
 void VirtualPad::OnClose(wxCloseEvent & event)
 {
+	g_TASInput.SetVirtualPadReading(false);
 	Hide();
 }
 
@@ -195,6 +216,14 @@ void VirtualPad::OnTextCtrlChange(wxSpinEvent & event)
 		l_rightLeft->SetValue(event.GetInt());
 		g_TASInput.UpdateAnalog("l_leftright", event.GetInt());
 		break;
+	case ID_R_UPDOWN_TEXT:
+		r_upDown->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("r_updown", 255-event.GetInt());
+		break;
+	case ID_R_RIGHTLEFT_TEXT:
+		r_rightLeft->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("r_leftright", event.GetInt());
+		break;
 	default:
 		Console.WriteLn("Virtual Pad Error: Unknow TextCtrl change");
 		break;
@@ -212,6 +241,14 @@ void VirtualPad::OnSliderMove(wxCommandEvent & event)
 	case ID_L_RIGHTLEFT:
 		l_rightLeftText->SetValue(event.GetInt());
 		g_TASInput.UpdateAnalog("l_leftright", event.GetInt());
+		break;
+	case ID_R_UPDOWN:
+		r_upDownText->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("r_updown", 255-event.GetInt());
+		break;
+	case ID_R_RIGHTLEFT:
+		r_rightLeftText->SetValue(event.GetInt());
+		g_TASInput.UpdateAnalog("r_leftright", event.GetInt());
 		break;
 	default:
 		break;

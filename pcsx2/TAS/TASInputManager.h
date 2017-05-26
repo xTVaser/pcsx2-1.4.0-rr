@@ -13,10 +13,14 @@ public:
 	*/
 	void ToggleButton(wxString button);
 
+	// Handles analog sticks
 	void UpdateAnalog(wxString key, int value);
+
+	void SetVirtualPadReading(bool read=true);
 
 protected:
 	PadData pad;
+	bool virtualPad;
 };
 extern TASInputManager g_TASInput;
 

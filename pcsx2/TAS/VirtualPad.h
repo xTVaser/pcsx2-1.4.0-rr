@@ -12,6 +12,8 @@ public:
 
 	void UpdateInputs() const;
 
+	bool Show(bool show = true) override;
+
 protected:
 	wxToggleButton *up, *down, *left, *right;
 	wxToggleButton *r1, *r2, *r3;
@@ -20,8 +22,10 @@ protected:
 	wxToggleButton *select, *start;
 
 	wxSlider *l_upDown, *l_rightLeft;
+	wxSlider *r_upDown, *r_rightLeft;
 
 	wxSpinCtrl *l_upDownText, *l_rightLeftText;
+	wxSpinCtrl *r_upDownText, *r_rightLeftText;
 
 protected:
 	void OnClose(wxCloseEvent &event);
