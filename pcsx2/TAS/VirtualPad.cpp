@@ -189,7 +189,7 @@ void VirtualPad::OnTextCtrlChange(wxSpinEvent & event)
 	{
 	case ID_L_UPDOWN_TEXT:
 		l_upDown->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("l_updown", event.GetInt());
+		g_TASInput.UpdateAnalog("l_updown", 255-event.GetInt());
 		break;
 	case ID_L_RIGHTLEFT_TEXT:
 		l_rightLeft->SetValue(event.GetInt());
@@ -207,7 +207,7 @@ void VirtualPad::OnSliderMove(wxCommandEvent & event)
 	{
 	case ID_L_UPDOWN:
 		l_upDownText->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("l_updown", event.GetInt());
+		g_TASInput.UpdateAnalog("l_updown", 255-event.GetInt());
 		break;
 	case ID_L_RIGHTLEFT:
 		l_rightLeftText->SetValue(event.GetInt());

@@ -179,7 +179,6 @@ SIO_WRITE sioWriteController(u8 data)
 		g_KeyMovie.ControllerInterrupt(data, sio.port,sio.bufCount,sio.buf);//--TAS--//
 		//--LuaEngine--//
 		if (g_KeyMovie.isInterruptFrame()) {
-			Console.WriteLn(wxString::Format("%d %d", sio.port, sio.bufCount));
 			g_TASInput.ControllerInterrupt(data, sio.port, sio.bufCount, sio.buf);
 		}
 		//------------//
