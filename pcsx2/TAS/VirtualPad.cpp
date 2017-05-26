@@ -4,6 +4,7 @@
 
 enum
 {
+	// Normal
 	ID_UP=1,
 	ID_DOWN,
 	ID_LEFT,
@@ -20,6 +21,15 @@ enum
 	ID_TRIANGLE,
 	ID_START,
 	ID_SELECT,
+	// Analog
+	ID_L_UPDOWN,
+	ID_L_RIGHTLEFT,
+	ID_L_UPDOWN_TEXT,
+	ID_L_RIGHTLEFT_TEXT,
+	ID_R_UPDOWN,
+	ID_R_RIGHTLEFT,
+	ID_R_UPDOWN_TEXT,
+	ID_R_RIGHTLEFT_TEXT,
 };
 
 wxBEGIN_EVENT_TABLE(VirtualPad, wxFrame)
@@ -69,6 +79,18 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	// Start, select
 	select = new wxToggleButton(panel, ID_SELECT, _("Select"), wxPoint(150, y + h + space), wxSize(w, h));
 	start = new wxToggleButton(panel, ID_START, _("Start"), wxPoint(250, y + h + space), wxSize(w, h));
+
+	// Left analog
+	x = 5;
+	y = 200;
+	w = 200;
+	h = 30;
+	space = 3;
+	l_upDown = new wxSlider(panel, ID_L_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w), wxSL_VERTICAL | wxSL_INVERSE | wxSL_LEFT);
+	l_rightLeft = new wxSlider(panel, ID_L_RIGHTLEFT, 127, 0, 255, wxPoint(x, y + w + space), wxSize(w, h), wxSL_HORIZONTAL);
+
+	l_upDownText = new wxSpinCtrl(panel, ID_L_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20), wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
+	l_rightLeftText = new wxSpinCtrl(panel, ID_L_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20), wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
 
 	for (int i = ID_UP; i <= ID_SELECT; i++)
 		Bind(wxEVT_TOGGLEBUTTON, &VirtualPad::OnClick, this, i);
