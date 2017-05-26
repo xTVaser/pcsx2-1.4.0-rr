@@ -29,10 +29,10 @@ void TASInputManager::ControllerInterrupt(u8 & data, u8 & port, u16 & BufCount, 
 	}
 }
 
-void TASInputManager::ToggleButton(wxString button)
+void TASInputManager::SetButtonState(wxString button, bool state)
 {
 	auto normalKeys = pad.getNormalKeys(0);
-	normalKeys.at(button) = !normalKeys[button];
+	normalKeys.at(button) = state;
 	pad.setNormalKeys(0, normalKeys);
 }
 

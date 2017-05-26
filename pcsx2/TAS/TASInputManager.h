@@ -11,7 +11,7 @@ public:
 	/*
 	 Toggles the normal buttons
 	*/
-	void ToggleButton(wxString button);
+	void SetButtonState(wxString button, bool state);
 
 	// Handles analog sticks
 	void UpdateAnalog(wxString key, int value);

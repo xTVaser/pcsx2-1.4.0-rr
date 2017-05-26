@@ -6,21 +6,21 @@ enum
 {
 	// Normal
 	ID_UP=1,
-	ID_DOWN,
-	ID_LEFT,
 	ID_RIGHT,
-	ID_L1,
-	ID_L2,
-	ID_R1,
-	ID_R2,
-	ID_L3,
-	ID_R3,
-	ID_SQUARE,
+	ID_LEFT,
+	ID_DOWN,
+	ID_SELECT,
+	ID_START,
 	ID_X,
 	ID_CIRCLE,
+	ID_SQUARE,
 	ID_TRIANGLE,
-	ID_START,
-	ID_SELECT,
+	ID_L1,
+	ID_L2,
+	ID_L3,
+	ID_R1,
+	ID_R2,
+	ID_R3,
 	// Analog (sliders)
 	ID_L_UPDOWN,
 	ID_L_RIGHTLEFT,
@@ -31,6 +31,8 @@ enum
 	ID_L_RIGHTLEFT_TEXT,
 	ID_R_UPDOWN_TEXT,
 	ID_R_RIGHTLEFT_TEXT,
+	// Reset
+	ID_RESET
 };
 
 wxBEGIN_EVENT_TABLE(VirtualPad, wxFrame)
@@ -38,48 +40,48 @@ wxBEGIN_EVENT_TABLE(VirtualPad, wxFrame)
 wxEND_EVENT_TABLE()
 
 VirtualPad::VirtualPad(wxWindow * parent)
-	: wxFrame(parent, wxID_ANY, L"Virtual Pad", wxDefaultPosition, wxSize(550, 500), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+	: wxFrame(parent, wxID_ANY, L"Virtual Pad", wxDefaultPosition, wxSize(575, 500), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
 {
 	// Global
 	wxPanel *panel = new wxPanel(this, wxID_ANY);
-	int x = 2, y = 2;
+	int x = 10, y = 2;
 	int w = 50, h = 35;
 	int space = 5;
 
 	// Left triggers
-	l2 = new wxToggleButton(panel, ID_L2, L"L2", wxPoint(x, y), wxSize(w, h));
-	l1 = new wxToggleButton(panel, ID_L1, L"L1", wxPoint(x, y + h + space), wxSize(w, h));
+	buttons[0] = new wxToggleButton(panel, ID_L2, L"L2", wxPoint(x, y), wxSize(w, h));
+	buttons[1] = new wxToggleButton(panel, ID_L1, L"L1", wxPoint(x, y + h + space), wxSize(w, h));
 
 	// Cross Key
-	x = 2;
+	x = 15;
 	y = 100;
-	up = new wxToggleButton(panel, ID_UP, _("Up"), wxPoint(x + w + space, y), wxSize(w, h));
-	down = new wxToggleButton(panel, ID_DOWN, _("Down"), wxPoint(x + w + space, y + 2 * h + 2 * space), wxSize(w, h));
-	left = new wxToggleButton(panel, ID_LEFT, _("Left"), wxPoint(x, y + h + 5), wxSize(w, h));
-	right = new wxToggleButton(panel, ID_RIGHT, _("Right"), wxPoint(x + 2 * w + 2 * space, y + h + space), wxSize(w, h));
+	buttons[2] = new wxToggleButton(panel, ID_UP, _("Up"), wxPoint(x + w + space, y), wxSize(w, h));
+	buttons[3] = new wxToggleButton(panel, ID_DOWN, _("Down"), wxPoint(x + w + space, y + 2 * h + 2 * space), wxSize(w, h));
+	buttons[4] = new wxToggleButton(panel, ID_LEFT, _("Left"), wxPoint(x, y + h + 5), wxSize(w, h));
+	buttons[5] = new wxToggleButton(panel, ID_RIGHT, _("Right"), wxPoint(x + 2 * w + 2 * space, y + h + space), wxSize(w, h));
 
 	// Right triggers
-	x = 450;
+	x = 475;
 	y = 2;
-	r2 = new wxToggleButton(panel, ID_R2, L"R2", wxPoint(x, y), wxSize(w, h));
-	r1 = new wxToggleButton(panel, ID_R1, L"R1", wxPoint(x, y + h + space), wxSize(w, h));
+	buttons[6] = new wxToggleButton(panel, ID_R2, L"R2", wxPoint(x, y), wxSize(w, h));
+	buttons[7] = new wxToggleButton(panel, ID_R1, L"R1", wxPoint(x, y + h + space), wxSize(w, h));
 
 	// Action buttons
-	x = 350;
+	x = 365;
 	y = 100;
-	triangle = new wxToggleButton(panel, ID_TRIANGLE, _("Triangle"), wxPoint(x + w + space, y), wxSize(w, h));
-	xButton = new wxToggleButton(panel, ID_X, _("X"), wxPoint(x + w + space, y + 2 * h + 2 * space), wxSize(w, h));
-	square = new wxToggleButton(panel, ID_SQUARE, _("Square"), wxPoint(x, y + h + 5), wxSize(w, h));
-	circle = new wxToggleButton(panel, ID_CIRCLE, _("Circle"), wxPoint(x + 2 * w + 2 * space, y + h + space), wxSize(w, h));
+	buttons[8] = new wxToggleButton(panel, ID_TRIANGLE, _("Triangle"), wxPoint(x + w + space, y), wxSize(w, h));
+	buttons[9] = new wxToggleButton(panel, ID_X, _("X"), wxPoint(x + w + space, y + 2 * h + 2 * space), wxSize(w, h));
+	buttons[10] = new wxToggleButton(panel, ID_SQUARE, _("Square"), wxPoint(x, y + h + 5), wxSize(w, h));
+	buttons[11] = new wxToggleButton(panel, ID_CIRCLE, _("Circle"), wxPoint(x + 2 * w + 2 * space, y + h + space), wxSize(w, h));
 
 	// L3, R3
 	y = 20;
-	l3 = new wxToggleButton(panel, ID_L3, L"L3", wxPoint(150, y), wxSize(w, h));
-	r3 = new wxToggleButton(panel, ID_R3, L"R3", wxPoint(300, y), wxSize(w, h));
+	buttons[12] = new wxToggleButton(panel, ID_L3, L"L3", wxPoint(150, y), wxSize(w, h));
+	buttons[13] = new wxToggleButton(panel, ID_R3, L"R3", wxPoint(350, y), wxSize(w, h));
 
 	// Start, select
-	select = new wxToggleButton(panel, ID_SELECT, _("Select"), wxPoint(150, y + h + space), wxSize(w, h));
-	start = new wxToggleButton(panel, ID_START, _("Start"), wxPoint(300, y + h + space), wxSize(w, h));
+	buttons[14] = new wxToggleButton(panel, ID_SELECT, _("Select"), wxPoint(150, y + h + space), wxSize(w, h));
+	buttons[15] = new wxToggleButton(panel, ID_START, _("Start"), wxPoint(350, y + h + space), wxSize(w, h));
 
 	// Left analog
 	x = 5;
@@ -87,28 +89,32 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	w = 200;
 	h = 30;
 	space = 3;
-	l_upDown = new wxSlider(panel, ID_L_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w),
+	sticks[0] = new wxSlider(panel, ID_L_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w),
 			wxSL_VERTICAL | wxSL_INVERSE | wxSL_LEFT);
-	l_rightLeft = new wxSlider(panel, ID_L_RIGHTLEFT, 127, 0, 255, wxPoint(x, y + w + space), wxSize(w, h), wxSL_HORIZONTAL);
+	sticks[1] = new wxSlider(panel, ID_L_RIGHTLEFT, 127, 0, 255, wxPoint(x, y + w + space), wxSize(w, h), wxSL_HORIZONTAL);
 
-	l_upDownText = new wxSpinCtrl(panel, ID_L_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20),
+	sticksText[0] = new wxSpinCtrl(panel, ID_L_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20),
 			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
-	l_rightLeftText = new wxSpinCtrl(panel, ID_L_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20),
+	sticksText[1] = new wxSpinCtrl(panel, ID_L_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20),
 			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
 
 	// Right analog
 	x = 275;
-	r_upDown = new wxSlider(panel, ID_R_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w),
+	sticks[2] = new wxSlider(panel, ID_R_UPDOWN, 127, 0, 255, wxPoint(x + w + space, y), wxSize(h, w),
 			wxSL_VERTICAL | wxSL_INVERSE | wxSL_LEFT);
-	r_rightLeft = new wxSlider(panel, ID_R_RIGHTLEFT, 127, 0, 255, wxPoint(x, y + w + space), wxSize(w, h), wxSL_HORIZONTAL);
+	sticks[3] = new wxSlider(panel, ID_R_RIGHTLEFT, 127, 0, 255, wxPoint(x, y + w + space), wxSize(w, h), wxSL_HORIZONTAL);
 
-	r_upDownText = new wxSpinCtrl(panel, ID_R_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20),
+	sticksText[2] = new wxSpinCtrl(panel, ID_R_UPDOWN_TEXT, L"127", wxPoint(x + w + space + 30, y + w/2 - 10), wxSize(55, 20),
 			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
-	r_rightLeftText = new wxSpinCtrl(panel, ID_R_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20),
+	sticksText[3] = new wxSpinCtrl(panel, ID_R_RIGHTLEFT_TEXT, L"127", wxPoint(x + w/2 - 10, y + w + space + 30), wxSize(55, 20),
 			wxSP_ARROW_KEYS | wxALIGN_LEFT, 0, 255, 127);
+
+	// Reset
+	reset = new wxButton(panel, ID_RESET, _("Reset"), wxPoint(515, 430), wxSize(50, 35));
+	Bind(wxEVT_BUTTON, &VirtualPad::OnResetButton, this, ID_RESET);
 
 	// Handling buttons (normal keys)
-	for (int i = ID_UP; i <= ID_SELECT; i++)
+	for (int i = ID_UP; i <= 16; i++)
 		Bind(wxEVT_TOGGLEBUTTON, &VirtualPad::OnClick, this, i);
 
 	// Handling TextCtrl changes (analog keys)
@@ -118,17 +124,6 @@ VirtualPad::VirtualPad(wxWindow * parent)
 	// Handling Slider changes (analog keys)
 	for (int i = ID_L_UPDOWN; i <= ID_R_RIGHTLEFT; i++)
 		Bind(wxEVT_SLIDER, &VirtualPad::OnSliderMove, this, i);
-}
-
-void VirtualPad::UpdateInputs() const
-{
-	PadData pad;
-	auto normalKeys = pad.getNormalKeys(0);
-
-	if (up->GetValue())
-		normalKeys.at("up") = true;
-
-	pad.setNormalKeys(0, normalKeys);
 }
 
 bool VirtualPad::Show(bool show)
@@ -148,109 +143,58 @@ void VirtualPad::OnClose(wxCloseEvent & event)
 
 void VirtualPad::OnClick(wxCommandEvent & event)
 {
-	switch (event.GetId())
-	{
-	case ID_UP:
-		g_TASInput.ToggleButton("up");
-		break;
-	case ID_DOWN:
-		g_TASInput.ToggleButton("down");
-		break;
-	case ID_LEFT:
-		g_TASInput.ToggleButton("left");
-		break;
-	case ID_RIGHT:
-		g_TASInput.ToggleButton("right");
-		break;
-	case ID_L1:
-		g_TASInput.ToggleButton("l1");
-		break;
-	case ID_L2:
-		g_TASInput.ToggleButton("l2");
-		break;
-	case ID_L3:
-		g_TASInput.ToggleButton("l3");
-		break;
-	case ID_R1:
-		g_TASInput.ToggleButton("r1");
-		break;
-	case ID_R2:
-		g_TASInput.ToggleButton("r2");
-		break;
-	case ID_R3:
-		g_TASInput.ToggleButton("r3");
-		break;
-	case ID_SQUARE:
-		g_TASInput.ToggleButton("square");
-		break;
-	case ID_X:
-		g_TASInput.ToggleButton("x");
-		break;
-	case ID_TRIANGLE:
-		g_TASInput.ToggleButton("triangle");
-		break;
-	case ID_CIRCLE:
-		g_TASInput.ToggleButton("circle");
-		break;
-	case ID_START:
-		g_TASInput.ToggleButton("start");
-		break;
-	case ID_SELECT:
-		g_TASInput.ToggleButton("select");
-		break;
-	default:
+	if (0 < event.GetId() && event.GetId() <= 16)
+		g_TASInput.SetButtonState(PadDataNormalKeys[event.GetId() - ID_UP], event.IsChecked());
+	else
 		Console.WriteLn("Virtual Pad Error: Unknown toggle button pressed");
-		break;
+}
+
+void VirtualPad::OnResetButton(wxCommandEvent & event)
+{
+	// Normal buttons
+	for (int i = 0; i < 16; i++)
+	{
+		buttons[i]->SetValue(false);
+		g_TASInput.SetButtonState(PadDataNormalKeys[i], false);
+	}
+
+	// Analog
+	for (int i = 0; i < 4; i++)
+	{
+		sticks[i]->SetValue(127);
+		sticksText[i]->SetValue(127);
+		g_TASInput.UpdateAnalog(PadDataAnalogKeys[i], 127);
 	}
 }
 
 void VirtualPad::OnTextCtrlChange(wxSpinEvent & event)
 {
-	switch (event.GetId())
+	if (ID_L_UPDOWN_TEXT <= event.GetId() && event.GetId() <= ID_R_RIGHTLEFT_TEXT)
 	{
-	case ID_L_UPDOWN_TEXT:
-		l_upDown->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("l_updown", 255-event.GetInt());
-		break;
-	case ID_L_RIGHTLEFT_TEXT:
-		l_rightLeft->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("l_leftright", event.GetInt());
-		break;
-	case ID_R_UPDOWN_TEXT:
-		r_upDown->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("r_updown", 255-event.GetInt());
-		break;
-	case ID_R_RIGHTLEFT_TEXT:
-		r_rightLeft->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("r_leftright", event.GetInt());
-		break;
-	default:
-		Console.WriteLn("Virtual Pad Error: Unknow TextCtrl change");
-		break;
+		int id = event.GetId() - ID_L_UPDOWN_TEXT;
+		sticks[id]->SetValue(event.GetInt());
+		// We inverse up and down for more confort
+		if (id % 2 == 0)
+			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], 255 - event.GetInt());
+		else
+			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], event.GetInt());
 	}
+	else
+		Console.WriteLn("Virtual Pad Error: Unknow TextCtrl change");
 }
 
 void VirtualPad::OnSliderMove(wxCommandEvent & event)
 {
-	switch (event.GetId())
+	if (ID_L_UPDOWN <= event.GetId() && event.GetId() <= ID_R_RIGHTLEFT)
 	{
-	case ID_L_UPDOWN:
-		l_upDownText->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("l_updown", 255-event.GetInt());
-		break;
-	case ID_L_RIGHTLEFT:
-		l_rightLeftText->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("l_leftright", event.GetInt());
-		break;
-	case ID_R_UPDOWN:
-		r_upDownText->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("r_updown", 255-event.GetInt());
-		break;
-	case ID_R_RIGHTLEFT:
-		r_rightLeftText->SetValue(event.GetInt());
-		g_TASInput.UpdateAnalog("r_leftright", event.GetInt());
-		break;
-	default:
-		break;
+		int id = event.GetId() - ID_L_UPDOWN;
+		sticksText[id]->SetValue(event.GetInt());
+		// We inverse up and down for more confort
+		if (id % 2 == 0)
+			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], 255 - event.GetInt());
+		else
+			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], event.GetInt());
 	}
+	else
+		Console.WriteLn("Virtual Pad Error: Unknow TextCtrl change");
 }
