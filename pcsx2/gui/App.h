@@ -180,7 +180,8 @@ enum MenuIdentifiers
 	//------------//
 
 	// VirtualPad
-	MenuID_VirtualPad,
+	MenuID_VirtualPad_Port0,
+	MenuID_VirtualPad_Port1,
 };
 
 namespace Exception
@@ -515,7 +516,7 @@ protected:
 	wxWindowID			m_id_Disassembler;
 	wxWindowID			m_id_LuaFrame;//--LuaEngine--//
 	wxWindowID			m_id_KeyEditor;//--TAS--//
-	wxWindowID			m_id_VirtualPad;
+	wxWindowID			m_id_VirtualPad[2];
 
 	wxKeyEvent			m_kevt;
 
@@ -542,8 +543,9 @@ public:
 	DisassemblyDialog*	GetDisassemblyPtr() const	{ return (DisassemblyDialog*)wxWindow::FindWindowById(m_id_Disassembler); }
 	LuaFrame*			GetLuaFramePtr() const { return (LuaFrame*)wxWindow::FindWindowById(m_id_LuaFrame); }//--LuaEngine--//
 	KeyEditor *			GetKeyEditorPtr() const		{ return (KeyEditor*)wxWindow::FindWindowById(m_id_KeyEditor); }//--TAS--//
-	VirtualPad *		GetVirtualPadPtr() const {
-		return (VirtualPad*)wxWindow::FindWindowById(m_id_VirtualPad);
+	VirtualPad *		GetVirtualPadPtr(int port) const {
+		if (port < 0 || port > 1) return NULL;
+		return (VirtualPad*)wxWindow::FindWindowById(m_id_VirtualPad[port]);
 	}
 
 	void enterDebugMode();

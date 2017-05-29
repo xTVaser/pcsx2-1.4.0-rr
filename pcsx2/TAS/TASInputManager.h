@@ -8,19 +8,17 @@ public:
 
 	void ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[]);
 
-	/*
-	 Toggles the normal buttons
-	*/
-	void SetButtonState(wxString button, bool state);
+	// Handles normal keys
+	void SetButtonState(int port, wxString button, bool state);
 
 	// Handles analog sticks
-	void UpdateAnalog(wxString key, int value);
+	void UpdateAnalog(int port, wxString key, int value);
 
-	void SetVirtualPadReading(bool read=true);
+	void SetVirtualPadReading(int port, bool read);
 
 protected:
 	PadData pad;
-	bool virtualPad;
+	bool virtualPad[2];
 };
 extern TASInputManager g_TASInput;
 

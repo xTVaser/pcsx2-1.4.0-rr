@@ -678,10 +678,14 @@ void MainEmuFrame::Menu_KeyMovie_OpenKeyEditor(wxCommandEvent &event)
 
 //------//
 
-// TAS Input
+// Virtual Pad
 void MainEmuFrame::Menu_VirtualPad_Open(wxCommandEvent &event)
 {
-	VirtualPad *vp = wxGetApp().GetVirtualPadPtr();
+	VirtualPad *vp;
+	if (event.GetId() == MenuID_VirtualPad_Port0)
+		vp = wxGetApp().GetVirtualPadPtr(0);
+	else if (event.GetId() == MenuID_VirtualPad_Port1)
+		vp = wxGetApp().GetVirtualPadPtr(1);
 	if (vp)
 		vp->Show();
 }

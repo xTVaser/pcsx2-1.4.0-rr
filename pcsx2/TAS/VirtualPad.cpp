@@ -39,8 +39,9 @@ wxBEGIN_EVENT_TABLE(VirtualPad, wxFrame)
 	EVT_CLOSE(VirtualPad::OnClose)
 wxEND_EVENT_TABLE()
 
-VirtualPad::VirtualPad(wxWindow * parent)
-	: wxFrame(parent, wxID_ANY, L"Virtual Pad", wxDefaultPosition, wxSize(575, 500), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX))
+VirtualPad::VirtualPad(wxWindow * parent, int controllerPort)
+	: wxFrame(parent, wxID_ANY, wxString::Format("Virtual Pad %d", controllerPort), wxDefaultPosition, wxSize(575, 500), wxDEFAULT_FRAME_STYLE & ~(wxRESIZE_BORDER | wxMAXIMIZE_BOX)),
+		port(controllerPort)
 {
 	// Global
 	wxPanel *panel = new wxPanel(this, wxID_ANY);
@@ -131,20 +132,20 @@ bool VirtualPad::Show(bool show)
 	if (!wxFrame::Show(show))
 		return false;
 	if (show)
-		g_TASInput.SetVirtualPadReading(true);
+		g_TASInput.SetVirtualPadReading(port, true);
 	return true;
 }
 
 void VirtualPad::OnClose(wxCloseEvent & event)
 {
-	g_TASInput.SetVirtualPadReading(false);
+	g_TASInput.SetVirtualPadReading(port, false);
 	Hide();
 }
 
 void VirtualPad::OnClick(wxCommandEvent & event)
 {
 	if (0 < event.GetId() && event.GetId() <= 16)
-		g_TASInput.SetButtonState(PadDataNormalKeys[event.GetId() - ID_UP], event.IsChecked());
+		g_TASInput.SetButtonState(port, PadDataNormalKeys[event.GetId() - ID_UP], event.IsChecked());
 	else
 		Console.WriteLn("Virtual Pad Error: Unknown toggle button pressed");
 }
@@ -155,7 +156,7 @@ void VirtualPad::OnResetButton(wxCommandEvent & event)
 	for (int i = 0; i < 16; i++)
 	{
 		buttons[i]->SetValue(false);
-		g_TASInput.SetButtonState(PadDataNormalKeys[i], false);
+		g_TASInput.SetButtonState(port, PadDataNormalKeys[i], false);
 	}
 
 	// Analog
@@ -163,7 +164,7 @@ void VirtualPad::OnResetButton(wxCommandEvent & event)
 	{
 		sticks[i]->SetValue(127);
 		sticksText[i]->SetValue(127);
-		g_TASInput.UpdateAnalog(PadDataAnalogKeys[i], 127);
+		g_TASInput.UpdateAnalog(port, PadDataAnalogKeys[i], 127);
 	}
 }
 
@@ -175,9 +176,9 @@ void VirtualPad::OnTextCtrlChange(wxSpinEvent & event)
 		sticks[id]->SetValue(event.GetInt());
 		// We inverse up and down for more confort
 		if (id % 2 == 0)
-			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], 255 - event.GetInt());
+			g_TASInput.UpdateAnalog(port, PadDataAnalogKeys[id], 255 - event.GetInt());
 		else
-			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], event.GetInt());
+			g_TASInput.UpdateAnalog(port, PadDataAnalogKeys[id], event.GetInt());
 	}
 	else
 		Console.WriteLn("Virtual Pad Error: Unknow TextCtrl change");
@@ -191,9 +192,9 @@ void VirtualPad::OnSliderMove(wxCommandEvent & event)
 		sticksText[id]->SetValue(event.GetInt());
 		// We inverse up and down for more confort
 		if (id % 2 == 0)
-			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], 255 - event.GetInt());
+			g_TASInput.UpdateAnalog(port, PadDataAnalogKeys[id], 255 - event.GetInt());
 		else
-			g_TASInput.UpdateAnalog(PadDataAnalogKeys[id], event.GetInt());
+			g_TASInput.UpdateAnalog(port, PadDataAnalogKeys[id], event.GetInt());
 	}
 	else
 		Console.WriteLn("Virtual Pad Error: Unknow TextCtrl change");

@@ -256,7 +256,8 @@ void MainEmuFrame::ConnectMenus()
 	//------------//
 
 	// Virtual Pad
-	ConnectMenu(MenuID_VirtualPad, Menu_VirtualPad_Open);
+	ConnectMenu(MenuID_VirtualPad_Port0, Menu_VirtualPad_Open);
+	ConnectMenu(MenuID_VirtualPad_Port1, Menu_VirtualPad_Open);
 }
 
 void MainEmuFrame::InitLogBoxPosition( AppConfig::ConsoleLogOptions& conf )
@@ -561,8 +562,10 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	m_menuTools.Append(MenuId_Lua_Open, _("Lua Console"));
 	//------------//
 
+	m_menuTools.AppendSeparator();
 	// Virtual Pad
-	m_menuTools.Append(MenuID_VirtualPad, _("Virtual Pad"));
+	m_menuTools.Append(MenuID_VirtualPad_Port0, _("Virtual Pad Port 0"));
+	m_menuTools.Append(MenuID_VirtualPad_Port1, _("Virtual Pad Port 1"));
 
 	m_MenuItem_Console.Check( g_Conf->ProgLogBox.Visible );
 

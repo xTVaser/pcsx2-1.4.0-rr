@@ -83,8 +83,10 @@ void Pcsx2App::OpenMainFrame()
 	m_id_KeyEditor = keyEditor->GetId();
 	//-------//
 	// Virtual Pad
-	VirtualPad* virtualPad = new VirtualPad(mainFrame);
-	m_id_VirtualPad = virtualPad->GetId();
+	VirtualPad* virtualPad0 = new VirtualPad(mainFrame, 0);
+	m_id_VirtualPad[0] = virtualPad0->GetId();
+	VirtualPad *virtualPad1 = new VirtualPad(mainFrame, 1);
+	m_id_VirtualPad[1] = virtualPad1->GetId();
 
 	if (g_Conf->EmuOptions.Debugger.ShowDebuggerOnStart)
 		disassembly->Show();

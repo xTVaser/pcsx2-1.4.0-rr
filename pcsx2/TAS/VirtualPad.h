@@ -8,11 +8,13 @@
 class VirtualPad : public wxFrame
 {
 public:
-	VirtualPad(wxWindow *parent);
+	VirtualPad(wxWindow *parent, int controllerPort);
 
 	bool Show(bool show = true) override;
 
 protected:
+	int port;
+
 	wxToggleButton *buttons[16];
 	wxButton *reset;
 
