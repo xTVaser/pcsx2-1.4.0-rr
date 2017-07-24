@@ -1,5 +1,7 @@
 #include "PrecompiledHeader.h"
 
+#include "GSFrame.h"
+
 #include "App.h"	// use "CoreThread"
 #include "Counters.h"	// use"g_FrameCount"
 
@@ -38,6 +40,19 @@ void MovieControle::StopCheck()
 			fFrameAdvance = false;
 			fStop = true;
 			stopFrameCount = g_FrameCount;
+
+			// We force the frame counter in the title bar to change
+			wxString oldTitle = wxGetApp().GetGsFrame().GetTitle();
+			wxString title = g_Conf->Templates.TitleTemplate;
+			wxString frameCount = wxString::Format("%d", g_FrameCount);
+
+			title.Replace(L"${frame}", frameCount);	//--TAS--//
+			int frameIndex = title.find(wxString::Format(L"%d", g_FrameCount));
+			frameIndex += frameCount.length();
+
+			title.replace(frameIndex, oldTitle.length() - frameIndex, oldTitle.c_str().AsChar() + frameIndex);
+			
+			wxGetApp().GetGsFrame().SetTitle(title);
 		}
 	}
 	if (fStop && CoreThread.IsOpen() && CoreThread.IsRunning())

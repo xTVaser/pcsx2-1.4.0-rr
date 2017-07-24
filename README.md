@@ -58,6 +58,9 @@ If you wish to activate the keyboard shortcuts for saving to (or loading from) a
 2. Change the 10 into a 0 (zero)
 3. In LilyPad settings, switch the Keyboard API to Raw input
 
+# Titlebar during FrameAdvance
+I had to cheat a little to force the frame counter to update in the titlebar. So, the other information displayed is not accurate (because it's not updated).
+
 # Comments
 I implemented what I find useful. If you have other ideas (or if find bugs), don't hesitate to open an issue (or write a post in TASVideos' forum).
 
