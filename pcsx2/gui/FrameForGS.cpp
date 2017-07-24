@@ -122,6 +122,14 @@ GSPanel::GSPanel( wxWindow* parent )
 
 	InitDefaultAccelerators();
 
+	// Retrieving FrameAdvance Key
+	for (auto itr = m_Accels->begin(); itr != m_Accels->end(); ++itr) {
+		if (itr->second->Id == "FrameAdvance") {
+			m_frameAdvanceKey = itr->first;
+			break;
+		}
+	}
+
 	SetBackgroundColour(wxColour((unsigned long)0));
 	if( g_Conf->GSWindow.AlwaysHideMouse )
 	{
@@ -318,7 +326,8 @@ void GSPanel::OnKeyDown( wxKeyEvent& evt )
 	}
 #endif
 
-	if( (PADopen != NULL) && CoreThread.IsOpen() ) return;
+	if( (PADopen != NULL) && CoreThread.IsOpen() && evt.GetKeyCode() != m_frameAdvanceKey ) return;
+	if (evt.GetKeyCode() == m_frameAdvanceKey && evt.GetEventType() == wxEVT_KEY_UP) return;
 	DirectKeyCommand( evt );
 }
 
@@ -428,7 +437,7 @@ void GSPanel::OnLeftDclick(wxMouseEvent& evt)
 //  GSFrame Implementation
 // --------------------------------------------------------------------------------------
 
-static const uint TitleBarUpdateMs = 333;
+static const uint TitleBarUpdateMs = 50;
 
 
 GSFrame::GSFrame( const wxString& title)

@@ -37,6 +37,7 @@ void MovieControle::StopCheck()
 		if (stopFrameCount < g_FrameCount) {
 			fFrameAdvance = false;
 			fStop = true;
+			stopFrameCount = g_FrameCount;
 		}
 	}
 	if (fStop && CoreThread.IsOpen() && CoreThread.IsRunning())
@@ -68,12 +69,12 @@ void MovieControle::TogglePause()
 void MovieControle::Pause()
 {
 	fStop = true;
-	fFrameAdvance = false;
+	fFrameAdvance = true;
 }
 void MovieControle::UnPause()
 {
 	fStop = false;
 	fStart = true;
-	fFrameAdvance = false;
+	fFrameAdvance = true;
 }
 
