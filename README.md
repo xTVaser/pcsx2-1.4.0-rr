@@ -52,6 +52,12 @@ You will need:
   
 The added files can be found "./pcsx2/TAS"
 
+# Activate Shortcuts for save/load
+If you wish to activate the keyboard shortcuts for saving to (or loading from) a specific slot without having to manually switch the current slot to this one (so, if you don't want to use only F1, F2 and F3), here are the steps:
+1. In the `PCSX2-rr_keys.ini` remove the `#` before States_SaveSlot0, States_SaveSlot1 (and so on)
+2. Change the 10 into a 0 (zero)
+3. In LilyPad settings, switch the Keyboard API to Raw input
+
 # Comments
 I implemented what I find useful. If you have other ideas (or if find bugs), don't hesitate to open an issue (or write a post in TASVideos' forum).
 
