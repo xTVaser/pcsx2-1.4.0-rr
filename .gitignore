@@ -123,3 +123,6 @@ oprofile_data/
 /.vs/PCSX2_suite/v15/ipch/PCSX2-b8619af6/PCSX2-695583e5.ipch
 /.vs/PCSX2_suite/v15/ipch/PCSX2-b8619af6/PCSX2-695583e5.ipch
 /PCSX2_suite.VC.VC.opendb
+/.vs/slnx.sqlite
+/.vs
+/.vs

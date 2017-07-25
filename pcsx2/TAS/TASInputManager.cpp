@@ -1,6 +1,7 @@
 #include "PrecompiledHeader.h"
 #include "TASInputManager.h"
 #include "lua/LuaManager.h"
+#include "KeyMovie.h"
 
 TASInputManager g_TASInput;
 
@@ -29,6 +30,9 @@ void TASInputManager::ControllerInterrupt(u8 & data, u8 & port, u16 & BufCount, 
 		// Analog keys (! overrides !)
 		else if (pad.buf[port][bufIndex] != 127)
 			buf[BufCount] = pad.buf[port][bufIndex];
+
+		// Updating movie file
+		g_KeyMovie.ControllerInterrupt(data, port, BufCount, buf);
 	}
 }
 
