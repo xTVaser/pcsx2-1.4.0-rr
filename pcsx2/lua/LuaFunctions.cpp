@@ -2,6 +2,8 @@
 
 #include "MemoryTypes.h"// use"g_FrameCount"
 #include "Counters.h"	// use"g_FrameCount"
+#include "App.h"
+#include "GSFrame.h"
 
 #include "AppSaveStates.h"
 
@@ -349,6 +351,44 @@ static int movie_stop(lua_State *L)
 }
 
 //=============================================
+// gui
+//=============================================
+static int gui_drawLine(lua_State *L)
+{
+	auto* panel = wxGetApp().GetGsFrame().GetGui();
+
+	int x1 = luaL_checkinteger(L, 1), y1 = luaL_checkinteger(L, 2);
+	int x2 = luaL_checkinteger(L, 3), y2 = luaL_checkinteger(L, 4);
+
+	wxColor penColor("black");
+	if (lua_isinteger(L, 5) && lua_isinteger(L, 6) && lua_isinteger(L, 7)) {
+		int r = luaL_checkinteger(L, 5), g = luaL_checknumber(L, 6), b = luaL_checknumber(L, 7);
+
+		if (r < 0 || r > 255)
+			luaL_error(L, "Invalid red color range");
+		if (g < 0 || g > 255)
+			luaL_error(L, "Invalid green color range");
+		if (b < 0 || b > 255)
+			luaL_error(L, "Invalid blue color range");
+
+		int alpha = 255;
+		if (lua_isinteger(L, 8)) {
+			alpha = luaL_checkinteger(L, 8);
+			if (alpha < 0 || alpha > 255)
+				luaL_error(L, "Invalid alpha color range");
+		}
+
+		penColor = wxColor(r, g, b, alpha);
+	}
+	else if (lua_isstring(L, 5)) {
+		penColor = wxColor(luaL_checkstring(L, 5));
+	}
+
+	panel->DrawLine(x1, y1, x2, y2, penColor);
+	return 0;
+}
+
+//=============================================
 // lua
 //=============================================
 static int lua_func_close(lua_State *L)
@@ -511,7 +551,9 @@ static const struct luaL_Reg guilib[] = {
 	// alternative names
 	{ "drawtext",	  gui_text },
 	{ "drawbox",	  gui_drawbox },
-	{ "drawline",	  gui_drawline },
+	*/
+	{ "drawLine",	  gui_drawLine },
+	/*
 	{ "drawpixel",	  gui_drawpixel },
 	{ "setpixel",	  gui_drawpixel },
 	{ "writepixel",	  gui_drawpixel },

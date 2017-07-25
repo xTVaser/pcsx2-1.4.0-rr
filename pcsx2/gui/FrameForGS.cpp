@@ -30,6 +30,32 @@ static const KeyAcceleratorCode FULLSCREEN_TOGGLE_ACCELERATOR_GSPANEL=KeyAcceler
 
 //#define GSWindowScaleDebug
 
+GSGUIPanel::GSGUIPanel(wxFrame *parent)
+	: GSPanel(parent)
+{
+	m_dc = new wxClientDC(this);
+}
+
+GSGUIPanel::~GSGUIPanel()
+{
+	delete m_dc;
+}
+
+void GSGUIPanel::DoResize()
+{
+	GSPanel::DoResize();
+	m_dc = new wxClientDC(this);
+}
+
+void GSGUIPanel::DrawLine(int x1, int x2, int y1, int y2, wxColor color)
+{
+	Console.WriteLn("Drawing a line\n");
+	m_dc->SetPen(wxPen(color));
+	m_dc->DrawLine(x1, x2, y1, y2);
+	m_dc->SetPen(wxNullPen);
+	Console.WriteLn("Done\n");
+}
+
 void GSPanel::InitDefaultAccelerators()
 {
 	// Note: these override GlobalAccels ( Pcsx2App::InitDefaultGlobalAccelerators() )
@@ -547,6 +573,17 @@ bool GSFrame::Show( bool shown )
 		gsPanel->DoResize();
 		gsPanel->SetFocus();
 
+		GSGUIPanel *gsguiPanel = GetGui();
+
+		if (!gsguiPanel || gsguiPanel->IsBeingDeleted())
+		{
+			gsguiPanel = new GSGUIPanel(this);
+			m_id_gsguipanel = gsguiPanel->GetId();
+		}
+
+		gsguiPanel->Show( !EmuConfig.GS.DisableOutput);
+		gsPanel->DoResize();
+
 		if( wxStaticText* label = GetLabel_OutputDisabled() )
 			label->Show( EmuConfig.GS.DisableOutput );
 
@@ -586,6 +623,10 @@ GSPanel* GSFrame::GetViewport()
 	return (GSPanel*)FindWindowById( m_id_gspanel );
 }
 
+GSGUIPanel* GSFrame::GetGui()
+{
+	return (GSGUIPanel*)FindWindowById(m_id_gsguipanel);
+}
 
 void GSFrame::OnUpdateTitle( wxTimerEvent& evt )
 {
@@ -667,6 +708,8 @@ void GSFrame::OnMove( wxMoveEvent& evt )
 	if( !g_Conf->GSWindow.IsMaximized && !IsFullScreen() && !IsIconized() && IsVisible() )
 		g_Conf->GSWindow.WindowPos = GetScreenPosition();
 
+
+
 	// wxGTK note: X sends gratuitous amounts of OnMove messages for various crap actions
 	// like selecting or deselecting a window, which muck up docking logic.  We filter them
 	// out using 'lastpos' here. :)
@@ -699,6 +742,11 @@ void GSFrame::OnResize( wxSizeEvent& evt )
 	{
 		gsPanel->DoResize();
 		gsPanel->SetFocus();
+	}
+
+	if (GSGUIPanel *gui = GetGui())
+	{
+		gui->DoResize();
 	}
 
 	//wxPoint hudpos = wxPoint(-10,-10) + (GetClientSize() - m_hud->GetSize());

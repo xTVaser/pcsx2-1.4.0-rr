@@ -41,7 +41,7 @@ bool LuaEngine::Load()
 	LUA_REGISTER(lua_function_joypadlib, "joypad");
 	LUA_REGISTER(lua_function_savestatelib, "savestate");
 	LUA_REGISTER(lua_function_movielib, "movie");
-	//LUA_REGISTER(lua_function_guilib, "gui");
+	LUA_REGISTER(lua_function_guilib, "gui");
 	LUA_REGISTER(lua_function_lualib, "lua");
 #undef LUA_REGISTER
 
