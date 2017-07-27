@@ -393,13 +393,6 @@ static std::pair<wxColor, int> buildColor(lua_State *L, int base, wxColor defaul
 		luaL_error(L, "Invalid color description");
 }
 
-static int gui_clear(lua_State *L)
-{
-	auto *panel = wxGetApp().GetGsFrame().GetGui();
-	panel->Clear();
-	return 0;
-}
-
 static int gui_text(lua_State *L)
 {
 	auto *panel = wxGetApp().GetGsFrame().GetGui();
@@ -699,7 +692,6 @@ extern const struct luaL_Reg *lua_function_movielib = movielib;
 
 static const struct luaL_Reg guilib[] = {
 	/*{ "register",	  gui_register },*/
-	{ "clear",		  gui_clear },
 	{ "text",		  gui_text },
 	{ "box",		  gui_drawbox },
 	{ "rectangle",	  gui_drawrectangle},
