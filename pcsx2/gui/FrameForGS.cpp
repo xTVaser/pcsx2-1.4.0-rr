@@ -25,36 +25,11 @@
 #include "Counters.h" //--TAS--// use "g_FrameCount"
 
 #include <wx/utils.h>
+#include <wx/graphics.h>
 
 static const KeyAcceleratorCode FULLSCREEN_TOGGLE_ACCELERATOR_GSPANEL=KeyAcceleratorCode( WXK_RETURN ).Alt();
 
 //#define GSWindowScaleDebug
-
-GSGUIPanel::GSGUIPanel(wxFrame *parent)
-	: GSPanel(parent)
-{
-	m_dc = new wxClientDC(this);
-}
-
-GSGUIPanel::~GSGUIPanel()
-{
-	delete m_dc;
-}
-
-void GSGUIPanel::DoResize()
-{
-	GSPanel::DoResize();
-	m_dc = new wxClientDC(this);
-}
-
-void GSGUIPanel::DrawLine(int x1, int x2, int y1, int y2, wxColor color)
-{
-	Console.WriteLn("Drawing a line\n");
-	m_dc->SetPen(wxPen(color));
-	m_dc->DrawLine(x1, x2, y1, y2);
-	m_dc->SetPen(wxNullPen);
-	Console.WriteLn("Done\n");
-}
 
 void GSPanel::InitDefaultAccelerators()
 {
@@ -460,6 +435,99 @@ void GSPanel::OnLeftDclick(wxMouseEvent& evt)
 }
 
 // --------------------------------------------------------------------------------------
+//  GSGUIPanel Implementation
+// --------------------------------------------------------------------------------------
+GSGUIPanel::GSGUIPanel(wxFrame *parent)
+	: GSPanel(parent)
+{
+	Create();
+
+	Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler (GSGUIPanel::OnEraseBackground));
+	Connect(wxEVT_PAINT, wxPaintEventHandler(GSGUIPanel::OnPaint));
+}
+
+GSGUIPanel::~GSGUIPanel()
+{
+}
+
+void GSGUIPanel::DoResize()
+{
+	_parent::DoResize();
+	if (m_gc)
+		delete m_gc;
+	if (m_dc)
+		delete m_dc;
+	Create();
+}
+
+void GSGUIPanel::BeginFrame()
+{
+	Clear();
+	m_canHandlePaint = true;
+}
+
+void GSGUIPanel::EndFrame()
+{
+	m_canHandlePaint = false;
+}
+
+void GSGUIPanel::Clear()
+{
+	m_dc->SetBackground(*wxTRANSPARENT_BRUSH);
+	m_dc->Clear();
+}
+
+void GSGUIPanel::DrawLine(int x1, int y1, int x2, int y2, wxColor color)
+{
+	m_dc->SetPen(wxPen(color));
+	m_dc->DrawLine(x1, y1, x2, y2);
+	m_dc->SetPen(wxNullPen);
+}
+
+void GSGUIPanel::DrawText(int x, int y, wxString text, wxColor foreground, wxColor background,
+						int fontSize, int family, int style, int weight)
+{
+	m_dc->SetTextForeground(foreground);
+	m_dc->SetTextBackground(background);
+	wxFont font (fontSize, family, style, weight);
+	m_dc->SetFont(font);
+	m_dc->DrawText(text, x, y);
+}
+
+void GSGUIPanel::DrawBox(int x1, int y1, int x2, int y2, wxColor line, wxColor background)
+{
+	DrawRectangle(x1, y1, x2 - x1, y2 - y1, line, background);
+}
+
+void GSGUIPanel::DrawRectangle(int x, int y, int width, int height, wxColor line, wxColor background)
+{
+	m_dc->SetPen(wxPen(line));
+	m_dc->SetBrush(wxBrush(background));
+	m_dc->DrawRectangle(x, y, width, height);
+}
+
+void GSGUIPanel::DrawPixel(int x, int y, wxColor color)
+{
+	m_dc->SetPen(wxPen(color));
+	m_dc->DrawPoint(x, y);
+}
+
+void GSGUIPanel::OnPaint(wxPaintEvent &event)
+{
+	if (m_canHandlePaint) {
+		wxPaintDC dc(this);
+		dc.Blit(0, 0, GetSize().GetWidth(), GetSize().GetHeight(), m_dc, 0, 0);
+	}
+}
+
+void GSGUIPanel::Create()
+{
+	m_gc = wxGraphicsContext::Create(this);
+	m_dc = new wxGCDC(m_gc);
+	m_dc->SetBackgroundMode(wxSOLID);
+}
+
+// --------------------------------------------------------------------------------------
 //  GSFrame Implementation
 // --------------------------------------------------------------------------------------
 
@@ -470,6 +538,7 @@ GSFrame::GSFrame( const wxString& title)
 	: wxFrame(NULL, wxID_ANY, title, g_Conf->GSWindow.WindowPos)
 	, m_timer_UpdateTitle( this )
 {
+		Console.DoWriteLn("Test");
 	SetIcons( wxGetApp().GetIconBundle() );
 	SetBackgroundColour( *wxBLACK );
 
@@ -483,6 +552,10 @@ GSFrame::GSFrame( const wxString& title)
 	GSPanel* gsPanel = new GSPanel( this );
 	gsPanel->Show( !EmuConfig.GS.DisableOutput );
 	m_id_gspanel = gsPanel->GetId();
+
+	GSGUIPanel *gsguiPanel = new GSGUIPanel(this);
+	gsguiPanel->Show(!EmuConfig.GS.DisableOutput);
+	m_id_gsguipanel = gsguiPanel->GetId();
 
 	// TODO -- Implement this GS window status window!  Whee.
 	// (main concern is retaining proper client window sizes when closing/re-opening the window).
@@ -581,8 +654,8 @@ bool GSFrame::Show( bool shown )
 			m_id_gsguipanel = gsguiPanel->GetId();
 		}
 
-		gsguiPanel->Show( !EmuConfig.GS.DisableOutput);
-		gsPanel->DoResize();
+		gsguiPanel->Show(!EmuConfig.GS.DisableOutput);
+		gsguiPanel->DoResize();
 
 		if( wxStaticText* label = GetLabel_OutputDisabled() )
 			label->Show( EmuConfig.GS.DisableOutput );

@@ -353,38 +353,175 @@ static int movie_stop(lua_State *L)
 //=============================================
 // gui
 //=============================================
-static int gui_drawLine(lua_State *L)
+// Constructs a wxColor from the stack, using base as the first value. The alpha component is read only if alpha is true
+static wxColor buildColorFromInt(lua_State *L, int base, bool alpha = false)
+{
+	int r = luaL_checkinteger(L, base), g = luaL_checknumber(L, base+1), b = luaL_checknumber(L, base+2);
+
+	if (r < 0 || r > 255)
+		luaL_error(L, "Invalid red color range");
+	if (g < 0 || g > 255)
+		luaL_error(L, "Invalid green color range");
+	if (b < 0 || b > 255)
+		luaL_error(L, "Invalid blue color range");
+
+	int alphaValue = 255;
+	if (alpha) {
+		alphaValue = luaL_checkinteger(L, base+3);
+		if (alphaValue < 0 || alphaValue > 255)
+			luaL_error(L, "Invalid alpha color range");
+	}
+
+	return wxColor(r, g, b, alphaValue);
+}
+
+// pair: color built and last argument read
+static std::pair<wxColor, int> buildColor(lua_State *L, int base, wxColor default = *wxBLACK)
+{
+	if (lua_isnone(L, base))
+		return std::make_pair(default, base-1);
+	else if (lua_isinteger(L, base) && lua_isinteger(L, base + 1) && lua_isinteger(L, base + 2)) {
+		if (lua_isinteger(L, base + 3))
+			return std::make_pair(buildColorFromInt(L, base, true), base + 3);
+		else
+			return std::make_pair(buildColorFromInt(L, base), base + 2);
+	}
+	else if (!lua_isinteger(L, base) && lua_isstring(L, base)) {
+		return std::make_pair(wxColor(luaL_checkstring(L, base)), base);
+	}
+	else
+		luaL_error(L, "Invalid color description");
+}
+
+static int gui_clear(lua_State *L)
+{
+	auto *panel = wxGetApp().GetGsFrame().GetGui();
+	panel->Clear();
+	return 0;
+}
+
+static int gui_text(lua_State *L)
+{
+	auto *panel = wxGetApp().GetGsFrame().GetGui();
+
+	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
+	wxString message = luaL_checkstring(L, 3);
+	auto foreground = buildColor(L, 4);
+	auto background = buildColor(L, foreground.second + 1);
+
+	int startFont = background.second + 1;
+	int charSize = 12, family = wxFontFamily::wxFONTFAMILY_DEFAULT;
+	int style = wxFontStyle::wxFONTSTYLE_NORMAL, weight = wxFontWeight::wxFONTWEIGHT_BOLD;
+
+	if (lua_isinteger(L, startFont))
+	{
+		charSize = luaL_checkinteger(L, startFont);
+		if (lua_isstring(L, startFont + 1))
+		{
+			wxString fam = luaL_checkstring(L, startFont + 1);
+			fam.MakeLower();
+			if (fam == "default")
+				family = wxFontFamily::wxFONTFAMILY_DEFAULT;
+			else if (fam == "decorative")
+				family = wxFontFamily::wxFONTFAMILY_DECORATIVE;
+			else if (fam == "roman")
+				family = wxFontFamily::wxFONTFAMILY_ROMAN;
+			else if (fam == "script")
+				family = wxFontFamily::wxFONTFAMILY_SCRIPT;
+			else if (fam == "swiss")
+				family = wxFontFamily::wxFONTFAMILY_SWISS;
+			else if (fam == "modern")
+				family = wxFontFamily::wxFONTFAMILY_MODERN;
+			else if (fam == "teletype")
+				family = wxFontFamily::wxFONTFAMILY_TELETYPE;
+			else
+				luaL_error(L, fam + " is an invalid font family");
+
+			if (lua_isstring(L, startFont + 2))
+			{
+				wxString sty = luaL_checkstring(L, startFont + 2);
+
+				if (sty == "normal")
+					style = wxFontStyle::wxFONTSTYLE_NORMAL;
+				else if (sty == "italic")
+					style = wxFontStyle::wxFONTSTYLE_ITALIC;
+				else if (sty == "slant")
+					style = wxFontStyle::wxFONTSTYLE_SLANT;
+				else
+					luaL_error(L, sty + " is an invalid font style");
+
+				if (lua_isstring(L, startFont + 3))
+				{
+					wxString wei = luaL_checkstring(L, startFont + 3);
+
+					if (wei == "normal")
+						weight = wxFontWeight::wxFONTWEIGHT_NORMAL;
+					else if (wei == "light")
+						weight = wxFontWeight::wxFONTWEIGHT_LIGHT;
+					else if (wei == "bold")
+						weight = wxFontWeight::wxFONTWEIGHT_BOLD;
+					else
+						luaL_error(L, wei + " is an invalid font weight");
+				}
+			}
+		}
+	}
+
+	panel->DrawText(x, y, message, foreground.first, background.first, charSize, family, style, weight);
+
+	return 0;
+}
+
+static int gui_drawbox(lua_State *L)
+{
+	auto *panel = wxGetApp().GetGsFrame().GetGui();
+
+	int x1 = luaL_checkinteger(L, 1), y1 = luaL_checkinteger(L, 2);
+	int x2 = luaL_checkinteger(L, 3), y2 = luaL_checkinteger(L, 4);
+	auto line = buildColor(L, 5);
+	auto background = buildColor(L, line.second + 1);
+
+	panel->DrawBox(x1, y1, x2, y2, line.first, background.first);
+
+	return 0;
+}
+
+static int gui_drawrectangle(lua_State *L)
+{
+	auto *panel = wxGetApp().GetGsFrame().GetGui();
+
+	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
+	int width = luaL_checkinteger(L, 3), height = luaL_checkinteger(L, 4);
+	auto line = buildColor(L, 5);
+	auto background = buildColor(L, line.second + 1);
+
+	panel->DrawBox(x, y, width, height, line.first, background.first);
+
+	return 0;
+}
+
+static int gui_drawline(lua_State *L)
 {
 	auto* panel = wxGetApp().GetGsFrame().GetGui();
 
 	int x1 = luaL_checkinteger(L, 1), y1 = luaL_checkinteger(L, 2);
 	int x2 = luaL_checkinteger(L, 3), y2 = luaL_checkinteger(L, 4);
 
-	wxColor penColor("black");
-	if (lua_isinteger(L, 5) && lua_isinteger(L, 6) && lua_isinteger(L, 7)) {
-		int r = luaL_checkinteger(L, 5), g = luaL_checknumber(L, 6), b = luaL_checknumber(L, 7);
+	auto penColor = buildColor(L, 5);
 
-		if (r < 0 || r > 255)
-			luaL_error(L, "Invalid red color range");
-		if (g < 0 || g > 255)
-			luaL_error(L, "Invalid green color range");
-		if (b < 0 || b > 255)
-			luaL_error(L, "Invalid blue color range");
+	panel->DrawLine(x1, y1, x2, y2, penColor.first);
+	return 0;
+}
 
-		int alpha = 255;
-		if (lua_isinteger(L, 8)) {
-			alpha = luaL_checkinteger(L, 8);
-			if (alpha < 0 || alpha > 255)
-				luaL_error(L, "Invalid alpha color range");
-		}
+static int gui_drawpixel(lua_State *L)
+{
+	auto *panel = wxGetApp().GetGsFrame().GetGui();
 
-		penColor = wxColor(r, g, b, alpha);
-	}
-	else if (lua_isstring(L, 5)) {
-		penColor = wxColor(luaL_checkstring(L, 5));
-	}
+	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
+	auto color = buildColor(L, 3);
 
-	panel->DrawLine(x1, y1, x2, y2, penColor);
+	panel->DrawPixel(x, y, color.first);
+
 	return 0;
 }
 
@@ -535,11 +672,14 @@ static const struct luaL_Reg movielib[] = {
 extern const struct luaL_Reg *lua_function_movielib = movielib;
 
 static const struct luaL_Reg guilib[] = {
-	/*{ "register",	  gui_register },
+	/*{ "register",	  gui_register },*/
+	{ "clear",		  gui_clear },
 	{ "text",		  gui_text },
 	{ "box",		  gui_drawbox },
+	{ "rectangle",	  gui_drawrectangle},
 	{ "line",		  gui_drawline },
 	{ "pixel",		  gui_drawpixel },
+	/*
 	{ "opacity",	  gui_setopacity },
 	{ "transparency", gui_transparency },
 	{ "popup",		  gui_popup },
@@ -547,18 +687,17 @@ static const struct luaL_Reg guilib[] = {
 	{ "gdscreenshot", gui_gdscreenshot },
 	{ "gdoverlay",	  gui_gdoverlay },
 	{ "getpixel",	  gui_getpixel },
+	*/
 
 	// alternative names
-	{ "drawtext",	  gui_text },
-	{ "drawbox",	  gui_drawbox },
-	*/
-	{ "drawLine",	  gui_drawLine },
+	{ "drawText",	  gui_text },
+	{ "drawBox",	  gui_drawbox },
+	{ "drawRectangle",gui_drawrectangle},
+	{ "drawLine",	  gui_drawline },
+	{ "drawPixel",	  gui_drawpixel },
+	{ "setPixel",	  gui_drawpixel },
+	{ "writePixel",	  gui_drawpixel },
 	/*
-	{ "drawpixel",	  gui_drawpixel },
-	{ "setpixel",	  gui_drawpixel },
-	{ "writepixel",	  gui_drawpixel },
-	{ "rect",		  gui_drawbox },
-	{ "drawrect",	  gui_drawbox },
 	{ "drawimage",	  gui_gdoverlay },
 	{ "image",		  gui_gdoverlay },
 	{ "readpixel",	  gui_getpixel },*/

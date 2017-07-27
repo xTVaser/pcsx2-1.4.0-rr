@@ -1,5 +1,8 @@
 #include "PrecompiledHeader.h"
 
+#include "App.h"
+#include "GSFrame.h"
+
 #include "TAS/MovieControle.h"
 
 #include "LuaManager.h"
@@ -48,9 +51,14 @@ void LuaManager::setNowFramePadData(const PadData & pad)
 
 void LuaManager::FrameBoundary()
 {
+	GSGUIPanel* panel = wxGetApp().GetGsFrame().GetGui();
+	if (panel)
+		panel->BeginFrame();
 	lua.callAfter();
 	lua.callBefore();
 	lua.Resume();
+	if (panel)
+		panel->EndFrame();
 }
 
 void LuaManager::setFileName(wxString filename)

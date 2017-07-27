@@ -18,6 +18,8 @@
 
 #include "AppCommon.h"
 #include "CpuUsageProvider.h"
+#include "wx/dcbuffer.h"
+#include <wx/dcgraph.h>
 
 
 enum LimiterModeType
@@ -53,7 +55,7 @@ public:
 	GSPanel( wxWindow* parent );
 	virtual ~GSPanel() throw();
 
-	void DoResize();
+	virtual void DoResize();
 	void DoShowMouse();
 	void DirectKeyCommand( wxKeyEvent& evt );
 	void DirectKeyCommand( const KeyAcceleratorCode& kac );
@@ -79,21 +81,40 @@ protected:
 
 // --------------------------------------------------------------------------------------
 //  GSGUIPanel
+//  This panel is intented to be used by Lua scripts
+//  TODO: If anyone knows how to make wxBufferedDC to work without having a black screen...
 // --------------------------------------------------------------------------------------
 class GSGUIPanel : public GSPanel
 {
-	typedef wxPanel _parent;
+	typedef GSPanel _parent;
 
 protected:
-	wxClientDC* m_dc;
+	wxGraphicsContext *m_gc;
+	wxGCDC *m_dc;
+	bool m_canHandlePaint = false;
 
 public:
 	GSGUIPanel(wxFrame* parent);
 	virtual ~GSGUIPanel() throw();
 
-	void DoResize();
+	void DoResize();			// Overload to re-create dc
+	
+	void BeginFrame();			// Must be called at the beginning of the Lua boundary frame (clears the screen from the previous drawings)
+	void EndFrame();			// Must be called at the end of the Lua boundary frame
 
-	void DrawLine(int x1, int x2, int y1, int y2, wxColor color = wxColor("black"));
+	void Clear();				// Erases everything from the screen
+	void DrawLine(int x1, int y1, int x2, int y2, wxColor color);
+	void DrawText(int x, int y, wxString text, wxColor foreground, wxColor background,
+					int fontSize, int family, int style, int weight);
+	void DrawBox(int x1, int y1, int x2, int y2, wxColor line, wxColor background);
+	void DrawRectangle(int x, int y, int width, int height, wxColor line, wxColor background);
+	void DrawPixel(int x, int y, wxColor color);
+
+protected:
+	void OnEraseBackground(wxEraseEvent &event) {}
+	void OnPaint(wxPaintEvent &event);
+	
+	void Create();				// Initialises pointers
 };
 
 
