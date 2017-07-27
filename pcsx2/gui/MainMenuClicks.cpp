@@ -689,3 +689,74 @@ void MainEmuFrame::Menu_VirtualPad_Open(wxCommandEvent &event)
 	if (vp)
 		vp->Show();
 }
+
+// AVI/WAV
+void MainEmuFrame::Menu_AVIWAV_Record(wxCommandEvent &event)
+{
+	ScopedCoreThreadPause paused_core;
+	paused_core.AllowResume();
+
+	m_recordAVIWAV = true;
+	AVIWAVUpdate();
+}
+
+void MainEmuFrame::Menu_AVIWAV_Stop(wxCommandEvent &event)
+{
+	ScopedCoreThreadPause paused_core;
+	paused_core.AllowResume();
+
+	m_recordAVIWAV = false;
+	AVIWAVUpdate();
+}
+
+void MainEmuFrame::AVIWAVUpdate()
+{
+	GetMTGS().WaitGS();		// make sure GS is in sync with the audio stream when we start.
+	if (m_recordAVIWAV) {
+		// start recording
+
+		// make the recording setup dialog[s] pseudo-modal also for the main PCSX2 window
+		// (the GSdx dialog is already properly modal for the GS window)
+		bool needsMainFrameEnable = false;
+		if (GetMainFramePtr() && GetMainFramePtr()->IsEnabled()) {
+			needsMainFrameEnable = true;
+			GetMainFramePtr()->Disable();
+		}
+
+		if (GSsetupRecording) {
+			// GSsetupRecording can be aborted/canceled by the user. Don't go on to record the audio if that happens.
+			if (GSsetupRecording(m_recordAVIWAV, NULL)) {
+				if (SPU2setupRecording) SPU2setupRecording(m_recordAVIWAV, NULL);
+			} else {
+				// recording dialog canceled by the user. align our state
+				m_recordAVIWAV = false;
+			}
+		} else {
+			// the GS doesn't support recording.
+			if (SPU2setupRecording) SPU2setupRecording(m_recordAVIWAV, NULL);
+		}
+
+		if (GetMainFramePtr() && needsMainFrameEnable)
+			GetMainFramePtr()->Enable();
+
+	} else {
+		// stop recording
+		if (GSsetupRecording) GSsetupRecording(m_recordAVIWAV, NULL);
+		if (SPU2setupRecording) SPU2setupRecording(m_recordAVIWAV, NULL);
+	}
+
+	if (m_recordAVIWAV) {
+		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Record)->Enable(false);
+		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Stop)->Enable(true);
+	}
+	else {
+		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Record)->Enable(true);
+		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Stop)->Enable(false);
+	}
+}
+
+// Screenshot
+void MainEmuFrame::Menu_Screenshot_shot(wxCommandEvent & event)
+{
+	GSmakeSnapshot(g_Conf->Folders.Snapshots.ToAscii());
+}

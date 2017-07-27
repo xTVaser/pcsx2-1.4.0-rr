@@ -258,6 +258,13 @@ void MainEmuFrame::ConnectMenus()
 	// Virtual Pad
 	ConnectMenu(MenuID_VirtualPad_Port0, Menu_VirtualPad_Open);
 	ConnectMenu(MenuID_VirtualPad_Port1, Menu_VirtualPad_Open);
+
+	// AVI/WAV
+	ConnectMenu(MenuID_AVIWAV_Record, Menu_AVIWAV_Record);
+	ConnectMenu(MenuID_AVIWAV_Stop, Menu_AVIWAV_Stop);
+
+	// Screenshot
+	ConnectMenu(MenuID_Screenshot_shot, Menu_Screenshot_shot);
 }
 
 void MainEmuFrame::InitLogBoxPosition( AppConfig::ConsoleLogOptions& conf )
@@ -337,7 +344,10 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	, m_menuConfig	( *new wxMenu() )
 	, m_menuMisc	( *new wxMenu() )
 	, m_menuDebug	( *new wxMenu() )
-	, m_menuMovieDlg(*new wxMenu())	//--TAS--//
+	, m_CheatsSubmenu (*new wxMenu())
+	, m_MovieSubmenu(*new wxMenu())	//--TAS--//
+	, m_AVIWAVSubmenu(*new wxMenu())
+	, m_ScreenshotSubmenu(*new wxMenu())
 	, m_menuTools(*new wxMenu())	//--Tools--//
 
 	, m_LoadStatesSubmenu( *MakeStatesSubMenu( MenuId_State_Load01, MenuId_State_LoadBackup ) )
@@ -362,7 +372,7 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	m_menubar.Append( &m_menuConfig,	_("&Config") );
 	m_menubar.Append( &m_menuMisc,		_("&Misc") );
 	m_menubar.Append( &m_menuDebug,		_("&Debug") );
-	m_menubar.Append(&m_menuMovieDlg, _("&Movie"));	//--TAS--//
+	m_menubar.Append(&m_MovieSubmenu, _("&Movie"));	//--TAS--//
 	m_menubar.Append(&m_menuTools, _("&Tools"));	//--Tools--//
 
 	SetMenuBar( &m_menubar );
@@ -450,17 +460,13 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 
 	m_menuSys.AppendSeparator();
 
-	m_menuSys.Append(MenuId_EnablePatches,	_("Automatic Gamefixes"),
-		_("Automatically applies needed Gamefixes to known problematic games"), wxITEM_CHECK);
+	m_menuSys.Append(MenuId_Sys_Cheats, _("Cheats"), &m_CheatsSubmenu);
 
-	m_menuSys.Append(MenuId_EnableCheats,	_("Enable Cheats"),
-		wxEmptyString, wxITEM_CHECK);
+	m_menuSys.AppendSeparator();
 
-	m_menuSys.Append(MenuId_EnableWideScreenPatches,	_("Enable Widescreen Patches"),
-		wxEmptyString, wxITEM_CHECK);
-
-	m_menuSys.Append(MenuId_EnableHostFs,	_("Enable Host Filesystem"),
-		wxEmptyString, wxITEM_CHECK);
+	m_menuSys.Append(MenuId_Sys_Movie, _("Movie"), &m_MovieSubmenu);
+	m_menuSys.Append(MenuId_Sys_AVIWAV, _("AVI/WAV"), &m_AVIWAVSubmenu);
+	m_menuSys.Append(MenuId_Sys_Screenshot, _("Screenshot"), &m_ScreenshotSubmenu);
 
 	m_menuSys.AppendSeparator();
 
@@ -547,15 +553,28 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	m_menuDebug.Append(MenuId_Debug_Logging,	_("Logging..."),			wxEmptyString);
 #endif
 
+	// Cheats
+	m_CheatsSubmenu.Append(MenuId_EnablePatches,	_("Automatic Gamefixes"),
+		_("Automatically applies needed Gamefixes to known problematic games"), wxITEM_CHECK);
+
+	m_CheatsSubmenu.Append(MenuId_EnableCheats,	_("Enable Cheats"),
+		wxEmptyString, wxITEM_CHECK);
+
+	m_CheatsSubmenu.Append(MenuId_EnableWideScreenPatches,	_("Enable Widescreen Patches"),
+		wxEmptyString, wxITEM_CHECK);
+
+	m_CheatsSubmenu.Append(MenuId_EnableHostFs,	_("Enable Host Filesystem"),
+		wxEmptyString, wxITEM_CHECK);
+
 	//--TAS--//
-	m_menuMovieDlg.Append(MenuId_KeyMovie_Record, _("New Record"));
-	m_menuMovieDlg.Append(MenuId_KeyMovie_Play, _("Play"));
-	m_menuMovieDlg.Append(MenuId_KeyMovie_Stop, _("Stop"));
-	m_menuMovieDlg.AppendSeparator();
-	m_menuMovieDlg.Append(MenuId_KeyMovie_ConvertP2M, _("Convert(p2m -> p2m2)"));
-	m_menuMovieDlg.Append(MenuId_KeyMovie_ConvertOld, _("Convert(v1.0~v1.2 -> v2.0 later)"));
-	m_menuMovieDlg.AppendSeparator();
-	m_menuMovieDlg.Append(MenuId_KeyMovie_OpenKeyEditor, _("Open KeyEditor Window..."));
+	m_MovieSubmenu.Append(MenuId_KeyMovie_Record, _("New Record"));
+	m_MovieSubmenu.Append(MenuId_KeyMovie_Play, _("Play"));
+	m_MovieSubmenu.Append(MenuId_KeyMovie_Stop, _("Stop"));
+	m_MovieSubmenu.AppendSeparator();
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertP2M, _("Convert(p2m -> p2m2)"));
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertOld, _("Convert(v1.0~v1.2 -> v2.0 later)"));
+	m_MovieSubmenu.AppendSeparator();
+	m_MovieSubmenu.Append(MenuId_KeyMovie_OpenKeyEditor, _("Open KeyEditor Window..."));
 	//-------//
 	
 	//--LuaEngine--//
@@ -566,6 +585,13 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	// Virtual Pad
 	m_menuTools.Append(MenuID_VirtualPad_Port0, _("Virtual Pad Port 1"));
 	m_menuTools.Append(MenuID_VirtualPad_Port1, _("Virtual Pad Port 2"));
+
+	// AVI/WAV
+	m_AVIWAVSubmenu.Append(MenuID_AVIWAV_Record, _("Record AVI/WAV"));
+	m_AVIWAVSubmenu.Append(MenuID_AVIWAV_Stop, _("Stop AVI/WAV"))->Enable(false);
+
+	// Screenshot
+	m_ScreenshotSubmenu.Append(MenuID_Screenshot_shot, _("Screenshot"));
 
 	m_MenuItem_Console.Check( g_Conf->ProgLogBox.Visible );
 

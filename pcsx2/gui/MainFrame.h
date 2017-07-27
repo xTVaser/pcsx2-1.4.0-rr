@@ -111,16 +111,21 @@ protected:
 	wxMenu&			m_menuConfig;
 	wxMenu&			m_menuMisc;
 	wxMenu&			m_menuDebug;
-	wxMenu&			m_menuMovieDlg;	//--TAS--//
 	wxMenu&			m_menuTools;	//--LuaEngine--//
 
 	wxMenu&			m_LoadStatesSubmenu;
 	wxMenu&			m_SaveStatesSubmenu;
+	wxMenu&			m_CheatsSubmenu;
+	wxMenu&			m_MovieSubmenu;	//--TAS--//
+	wxMenu&			m_ScreenshotSubmenu;
+	wxMenu&			m_AVIWAVSubmenu;
 
 	wxMenuItem&		m_MenuItem_Console;
 	wxMenuItem&		m_MenuItem_Console_Stdio;
 
 	PerPluginMenuInfo	m_PluginMenuPacks[PluginId_Count];
+
+	bool			m_recordAVIWAV;
 
 	virtual void DispatchEvent( const PluginEventType& plugin_evt );
 	virtual void DispatchEvent( const CoreThreadStatus& status );
@@ -216,6 +221,14 @@ protected:
 
 	// Virtual Pad
 	void Menu_VirtualPad_Open(wxCommandEvent &event);
+
+	// AVI/WAV
+	void Menu_AVIWAV_Record(wxCommandEvent &event);
+	void Menu_AVIWAV_Stop(wxCommandEvent &event);
+	void AVIWAVUpdate();
+
+	// Screenshot
+	void Menu_Screenshot_shot(wxCommandEvent &event);
 
 	void _DoBootCdvd();
 	bool _DoSelectIsoBrowser( wxString& dest );

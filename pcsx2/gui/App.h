@@ -104,11 +104,15 @@ enum MenuIdentifiers
 	MenuId_Sys_Shutdown,		// Closes virtual machine, shuts down plugins, wipes states.
 	MenuId_Sys_LoadStates,		// Opens load states submenu
 	MenuId_Sys_SaveStates,		// Opens save states submenu
+	MenuId_Sys_Cheats,
 	MenuId_EnableBackupStates,	// Checkbox to enable/disables savestates backup
 	MenuId_EnablePatches,
 	MenuId_EnableCheats,
 	MenuId_EnableWideScreenPatches,
 	MenuId_EnableHostFs,
+	MenuId_Sys_Movie,
+	MenuId_Sys_AVIWAV,
+	MenuId_Sys_Screenshot,
 
 	MenuId_State_Load,
 	MenuId_State_LoadOther,
@@ -182,6 +186,13 @@ enum MenuIdentifiers
 	// VirtualPad
 	MenuID_VirtualPad_Port0,
 	MenuID_VirtualPad_Port1,
+		
+	// AVI/WAV
+	MenuID_AVIWAV_Record,
+	MenuID_AVIWAV_Stop,
+
+	// Screenshot
+	MenuID_Screenshot_shot
 };
 
 namespace Exception
