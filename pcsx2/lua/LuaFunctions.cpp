@@ -400,11 +400,11 @@ static int gui_text(lua_State *L)
 	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
 	wxString message = luaL_checkstring(L, 3);
 	auto foreground = buildColor(L, 4);
-	auto background = buildColor(L, foreground.second + 1);
+	auto background = buildColor(L, foreground.second + 1, wxTransparentColor);
 
 	int startFont = background.second + 1;
 	int charSize = 12, family = wxFontFamily::wxFONTFAMILY_DEFAULT;
-	int style = wxFontStyle::wxFONTSTYLE_NORMAL, weight = wxFontWeight::wxFONTWEIGHT_BOLD;
+	int style = wxFontStyle::wxFONTSTYLE_NORMAL, weight = wxFontWeight::wxFONTWEIGHT_NORMAL;
 
 	if (lua_isinteger(L, startFont))
 	{
@@ -472,7 +472,7 @@ static int gui_drawbox(lua_State *L)
 	int x1 = luaL_checkinteger(L, 1), y1 = luaL_checkinteger(L, 2);
 	int x2 = luaL_checkinteger(L, 3), y2 = luaL_checkinteger(L, 4);
 	auto line = buildColor(L, 5);
-	auto background = buildColor(L, line.second + 1);
+	auto background = buildColor(L, line.second + 1, wxTransparentColor);
 
 	panel->DrawBox(x1, y1, x2, y2, line.first, background.first);
 
@@ -486,7 +486,7 @@ static int gui_drawrectangle(lua_State *L)
 	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
 	int width = luaL_checkinteger(L, 3), height = luaL_checkinteger(L, 4);
 	auto line = buildColor(L, 5);
-	auto background = buildColor(L, line.second + 1);
+	auto background = buildColor(L, line.second + 1, wxTransparentColor);
 
 	panel->DrawRectangle(x, y, width, height, line.first, background.first);
 
@@ -525,7 +525,7 @@ static int gui_drawellipse(lua_State *L)
 	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
 	int width = luaL_checkinteger(L, 3), height = luaL_checkinteger(L, 4);
 	auto line = buildColor(L, 5);
-	auto background = buildColor(L, line.second + 1);
+	auto background = buildColor(L, line.second + 1, wxTransparentColor);
 
 	panel->DrawEllipse(x, y, width, height, line.first, background.first);
 	return 0;
@@ -538,7 +538,7 @@ static int gui_drawcircle(lua_State *L)
 	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
 	int radius = luaL_checkinteger(L, 3);
 	auto line = buildColor(L, 4);
-	auto background = buildColor(L, line.second + 1);
+	auto background = buildColor(L, line.second + 1, wxTransparentColor);
 
 	panel->DrawCircle(x, y, radius, line.first, background.first);
 	return 0;
@@ -575,6 +575,7 @@ static const struct luaL_Reg emulib[] =
 	//{"wait", emu_wait},
 	{"pause", emu_pause},
 	{"unpause", emu_unpause},
+	{"resume", emu_unpause},
 	//{"emulateframe", emu_emulateframe},
 	//{"emulateframefastnoskipping", emu_emulateframefastnoskipping},
 	//{"emulateframefast", emu_emulateframefast},
