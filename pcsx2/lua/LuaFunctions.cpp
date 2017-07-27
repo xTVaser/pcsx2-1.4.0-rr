@@ -495,7 +495,7 @@ static int gui_drawrectangle(lua_State *L)
 	auto line = buildColor(L, 5);
 	auto background = buildColor(L, line.second + 1);
 
-	panel->DrawBox(x, y, width, height, line.first, background.first);
+	panel->DrawRectangle(x, y, width, height, line.first, background.first);
 
 	return 0;
 }
@@ -522,6 +522,32 @@ static int gui_drawpixel(lua_State *L)
 
 	panel->DrawPixel(x, y, color.first);
 
+	return 0;
+}
+
+static int gui_drawellipse(lua_State *L)
+{
+	auto *panel = wxGetApp().GetGsFrame().GetGui();
+
+	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
+	int width = luaL_checkinteger(L, 3), height = luaL_checkinteger(L, 4);
+	auto line = buildColor(L, 5);
+	auto background = buildColor(L, line.second + 1);
+
+	panel->DrawEllipse(x, y, width, height, line.first, background.first);
+	return 0;
+}
+
+static int gui_drawcircle(lua_State *L)
+{
+	auto *panel = wxGetApp().GetGsFrame().GetGui();
+
+	int x = luaL_checkinteger(L, 1), y = luaL_checkinteger(L, 2);
+	int radius = luaL_checkinteger(L, 3);
+	auto line = buildColor(L, 4);
+	auto background = buildColor(L, line.second + 1);
+
+	panel->DrawCircle(x, y, radius, line.first, background.first);
 	return 0;
 }
 
@@ -679,6 +705,8 @@ static const struct luaL_Reg guilib[] = {
 	{ "rectangle",	  gui_drawrectangle},
 	{ "line",		  gui_drawline },
 	{ "pixel",		  gui_drawpixel },
+	{ "ellipse",      gui_drawellipse},
+	{ "circle",       gui_drawcircle},
 	/*
 	{ "opacity",	  gui_setopacity },
 	{ "transparency", gui_transparency },
@@ -697,6 +725,8 @@ static const struct luaL_Reg guilib[] = {
 	{ "drawPixel",	  gui_drawpixel },
 	{ "setPixel",	  gui_drawpixel },
 	{ "writePixel",	  gui_drawpixel },
+	{ "drawEllipse",  gui_drawellipse},
+	{ "drawCircle",   gui_drawcircle},
 	/*
 	{ "drawimage",	  gui_gdoverlay },
 	{ "image",		  gui_gdoverlay },

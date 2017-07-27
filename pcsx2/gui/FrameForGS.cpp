@@ -512,6 +512,20 @@ void GSGUIPanel::DrawPixel(int x, int y, wxColor color)
 	m_dc->DrawPoint(x, y);
 }
 
+void GSGUIPanel::DrawEllipse(int x, int y, int width, int height, wxColor line, wxColor background)
+{
+	m_dc->SetPen(wxPen(line));
+	m_dc->SetBrush(wxBrush(background));
+	m_dc->DrawEllipse(x, y, width, height);
+}
+
+void GSGUIPanel::DrawCircle(int x, int y, int radius, wxColor line, wxColor background)
+{
+	m_dc->SetPen(wxPen(line));
+	m_dc->SetBrush(wxBrush(background));
+	m_dc->DrawCircle(x, y, radius);
+}
+
 void GSGUIPanel::OnPaint(wxPaintEvent &event)
 {
 	if (m_canHandlePaint) {

@@ -109,6 +109,8 @@ public:
 	void DrawBox(int x1, int y1, int x2, int y2, wxColor line, wxColor background);
 	void DrawRectangle(int x, int y, int width, int height, wxColor line, wxColor background);
 	void DrawPixel(int x, int y, wxColor color);
+	void DrawEllipse(int x, int y, int width, int height, wxColor line, wxColor background);
+	void DrawCircle(int x, int y, int radius, wxColor line, wxColor background);
 
 protected:
 	void OnEraseBackground(wxEraseEvent &event) {}
