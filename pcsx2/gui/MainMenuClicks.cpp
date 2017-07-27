@@ -746,12 +746,12 @@ void MainEmuFrame::AVIWAVUpdate()
 	}
 
 	if (m_recordAVIWAV) {
-		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Record)->Enable(false);
-		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Stop)->Enable(true);
+		m_AVIWAVSubmenu.FindItem(MenuId_AVIWAV_Record)->Enable(false);
+		m_AVIWAVSubmenu.FindItem(MenuId_AVIWAV_Stop)->Enable(true);
 	}
 	else {
-		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Record)->Enable(true);
-		m_AVIWAVSubmenu.FindItem(MenuID_AVIWAV_Stop)->Enable(false);
+		m_AVIWAVSubmenu.FindItem(MenuId_AVIWAV_Record)->Enable(true);
+		m_AVIWAVSubmenu.FindItem(MenuId_AVIWAV_Stop)->Enable(false);
 	}
 }
 
@@ -759,4 +759,14 @@ void MainEmuFrame::AVIWAVUpdate()
 void MainEmuFrame::Menu_Screenshot_shot(wxCommandEvent & event)
 {
 	GSmakeSnapshot(g_Conf->Folders.Snapshots.ToAscii());
+}
+
+void MainEmuFrame::Menu_Screenshot_as(wxCommandEvent &event)
+{
+	wxFileDialog fileDialog(this, "Select a file", g_Conf->Folders.Snapshots.ToAscii(), wxEmptyString, "BMP files (*.bmp)|*.bmp", wxFD_SAVE);
+
+	if (fileDialog.ShowModal() == wxID_OK)
+	{
+		GSmakeSnapshot(fileDialog.GetPath());
+	}
 }

@@ -188,11 +188,12 @@ enum MenuIdentifiers
 	MenuID_VirtualPad_Port1,
 		
 	// AVI/WAV
-	MenuID_AVIWAV_Record,
-	MenuID_AVIWAV_Stop,
+	MenuId_AVIWAV_Record,
+	MenuId_AVIWAV_Stop,
 
 	// Screenshot
-	MenuID_Screenshot_shot
+	MenuId_Screenshot_shot,
+	MenuId_Screenshot_saveAs
 };
 
 namespace Exception

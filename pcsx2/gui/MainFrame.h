@@ -229,6 +229,7 @@ protected:
 
 	// Screenshot
 	void Menu_Screenshot_shot(wxCommandEvent &event);
+	void Menu_Screenshot_as(wxCommandEvent &event);
 
 	void _DoBootCdvd();
 	bool _DoSelectIsoBrowser( wxString& dest );

@@ -524,13 +524,20 @@ bool GSRenderer::MakeSnapshot(const string& path)
 {
 	if(m_snapshot.empty())
 	{
-		time_t t = time(NULL);
-
-		char buff[16];
-
-		if(strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", localtime(&t)))
+		if (path.substr(path.size() - 4, 4) == ".bmp")
 		{
-			m_snapshot = format("%s_%s", path.c_str(), buff);
+			m_snapshot = path.substr(0, path.size() - 4); // We remove the .bmp
+		}
+		else
+		{
+			time_t t = time(NULL);
+
+			char buff[16];
+
+			if (strftime(buff, sizeof(buff), "%Y%m%d%H%M%S", localtime(&t)))
+			{
+				m_snapshot = format("%s_%s", path.c_str(), buff);
+			}
 		}
 	}
 

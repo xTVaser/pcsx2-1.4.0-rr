@@ -260,11 +260,12 @@ void MainEmuFrame::ConnectMenus()
 	ConnectMenu(MenuID_VirtualPad_Port1, Menu_VirtualPad_Open);
 
 	// AVI/WAV
-	ConnectMenu(MenuID_AVIWAV_Record, Menu_AVIWAV_Record);
-	ConnectMenu(MenuID_AVIWAV_Stop, Menu_AVIWAV_Stop);
+	ConnectMenu(MenuId_AVIWAV_Record, Menu_AVIWAV_Record);
+	ConnectMenu(MenuId_AVIWAV_Stop, Menu_AVIWAV_Stop);
 
 	// Screenshot
-	ConnectMenu(MenuID_Screenshot_shot, Menu_Screenshot_shot);
+	ConnectMenu(MenuId_Screenshot_shot, Menu_Screenshot_shot);
+	ConnectMenu(MenuId_Screenshot_saveAs, Menu_Screenshot_as);
 }
 
 void MainEmuFrame::InitLogBoxPosition( AppConfig::ConsoleLogOptions& conf )
@@ -587,11 +588,12 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	m_menuTools.Append(MenuID_VirtualPad_Port1, _("Virtual Pad Port 2"));
 
 	// AVI/WAV
-	m_AVIWAVSubmenu.Append(MenuID_AVIWAV_Record, _("Record AVI/WAV"));
-	m_AVIWAVSubmenu.Append(MenuID_AVIWAV_Stop, _("Stop AVI/WAV"))->Enable(false);
+	m_AVIWAVSubmenu.Append(MenuId_AVIWAV_Record, _("Record AVI/WAV"));
+	m_AVIWAVSubmenu.Append(MenuId_AVIWAV_Stop, _("Stop AVI/WAV"))->Enable(false);
 
 	// Screenshot
-	m_ScreenshotSubmenu.Append(MenuID_Screenshot_shot, _("Screenshot"));
+	m_ScreenshotSubmenu.Append(MenuId_Screenshot_shot, _("Screenshot"));
+	m_ScreenshotSubmenu.Append(MenuId_Screenshot_saveAs, _("Screenshot as..."));
 
 	m_MenuItem_Console.Check( g_Conf->ProgLogBox.Visible );
 
