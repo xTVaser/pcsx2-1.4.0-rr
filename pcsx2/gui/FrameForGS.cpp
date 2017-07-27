@@ -437,13 +437,17 @@ void GSPanel::OnLeftDclick(wxMouseEvent& evt)
 // --------------------------------------------------------------------------------------
 //  GSGUIPanel Implementation
 // --------------------------------------------------------------------------------------
+static wxMutex s_guiMutex;
 GSGUIPanel::GSGUIPanel(wxFrame *parent)
 	: GSPanel(parent)
 {
+	s_guiMutex.Lock();
 	Create();
 
 	Connect(wxEVT_ERASE_BACKGROUND, wxEraseEventHandler (GSGUIPanel::OnEraseBackground));
 	Connect(wxEVT_PAINT, wxPaintEventHandler(GSGUIPanel::OnPaint));
+	
+	s_guiMutex.Unlock();
 }
 
 GSGUIPanel::~GSGUIPanel()
@@ -452,23 +456,33 @@ GSGUIPanel::~GSGUIPanel()
 
 void GSGUIPanel::DoResize()
 {
-	_parent::DoResize();
+	s_guiMutex.Lock();
 	if (m_gc)
 		delete m_gc;
 	if (m_dc)
 		delete m_dc;
+	GSPanel::DoResize();
 	Create();
+	s_guiMutex.Unlock();
+}
+
+void GSGUIPanel::DirectKeyCommand(const KeyAcceleratorCode & kac)
+{
+	_parent::DirectKeyCommand(kac);
+
+	int pad = PADquery(0);
+	Console.WriteLn(wxString::Format("%d", pad));
 }
 
 void GSGUIPanel::BeginFrame()
 {
+	s_guiMutex.Lock();
 	Clear();
-	m_canHandlePaint = true;
 }
 
 void GSGUIPanel::EndFrame()
 {
-	m_canHandlePaint = false;
+	s_guiMutex.Unlock();
 }
 
 void GSGUIPanel::Clear()
@@ -528,10 +542,10 @@ void GSGUIPanel::DrawCircle(int x, int y, int radius, wxColor line, wxColor back
 
 void GSGUIPanel::OnPaint(wxPaintEvent &event)
 {
-	if (m_canHandlePaint) {
-		wxPaintDC dc(this);
-		dc.Blit(0, 0, GetSize().GetWidth(), GetSize().GetHeight(), m_dc, 0, 0);
-	}
+	s_guiMutex.Lock();
+	wxPaintDC dc(this);
+	dc.Blit(0, 0, GetSize().GetWidth(), GetSize().GetHeight(), m_dc, 0, 0);
+	s_guiMutex.Unlock();
 }
 
 void GSGUIPanel::Create()

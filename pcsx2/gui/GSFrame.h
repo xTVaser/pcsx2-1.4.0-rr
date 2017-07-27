@@ -58,7 +58,7 @@ public:
 	virtual void DoResize();
 	void DoShowMouse();
 	void DirectKeyCommand( wxKeyEvent& evt );
-	void DirectKeyCommand( const KeyAcceleratorCode& kac );
+	virtual void DirectKeyCommand( const KeyAcceleratorCode& kac );
 
 protected:
 	void AppStatusEvent_OnSettingsApplied();
@@ -91,13 +91,13 @@ class GSGUIPanel : public GSPanel
 protected:
 	wxGraphicsContext *m_gc;
 	wxGCDC *m_dc;
-	bool m_canHandlePaint = false;
 
 public:
 	GSGUIPanel(wxFrame* parent);
 	virtual ~GSGUIPanel() throw();
 
-	void DoResize();			// Overload to re-create dc
+	void DoResize() override;			// Overload to re-create dc
+	void DirectKeyCommand( const KeyAcceleratorCode& kac ) override;
 	
 	void BeginFrame();			// Must be called at the beginning of the Lua boundary frame (clears the screen from the previous drawings)
 	void EndFrame();			// Must be called at the end of the Lua boundary frame
