@@ -564,8 +564,8 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 
 	m_menuTools.AppendSeparator();
 	// Virtual Pad
-	m_menuTools.Append(MenuID_VirtualPad_Port0, _("Virtual Pad Port 0"));
-	m_menuTools.Append(MenuID_VirtualPad_Port1, _("Virtual Pad Port 1"));
+	m_menuTools.Append(MenuID_VirtualPad_Port0, _("Virtual Pad Port 1"));
+	m_menuTools.Append(MenuID_VirtualPad_Port1, _("Virtual Pad Port 2"));
 
 	m_MenuItem_Console.Check( g_Conf->ProgLogBox.Visible );
 
