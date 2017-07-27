@@ -9,4 +9,3 @@ function draw()
 end
 
 emu.registerbefore(draw)
-lua.close()
