@@ -82,7 +82,7 @@ protected:
 // --------------------------------------------------------------------------------------
 //  GSGUIPanel
 //  This panel is intented to be used by Lua scripts
-//  TODO: If anyone knows how to make wxBufferedDC to work without having a black screen...
+//  TODO: If anyone knows how to get wxBufferedDC to work without having a black screen...
 // --------------------------------------------------------------------------------------
 class GSGUIPanel : public GSPanel
 {
