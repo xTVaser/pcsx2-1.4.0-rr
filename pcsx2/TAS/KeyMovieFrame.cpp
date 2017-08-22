@@ -53,12 +53,12 @@ KeyMovieFrame::KeyMovieFrame(wxWindow *parent)
 	SetSizer(vbox);
 }
 
-wxFileName & KeyMovieFrame::getFile() const
+wxString KeyMovieFrame::getFile() const
 {
-	return m_filePicker->GetFileName();
+	return m_filePicker->GetPath();
 }
 
-wxString & KeyMovieFrame::getAuthor() const
+wxString KeyMovieFrame::getAuthor() const
 {
 	return m_author->GetValue();
 }

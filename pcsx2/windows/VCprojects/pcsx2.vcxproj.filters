@@ -916,7 +916,9 @@
     <ClCompile Include="..\..\TAS\TASInputManager.cpp">
       <Filter>TAS</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\TAS\KeyMovieFrame.cpp" />
+    <ClCompile Include="..\..\TAS\KeyMovieFrame.cpp">
+      <Filter>TAS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Patch.h">
@@ -1384,7 +1386,9 @@
     <ClInclude Include="..\..\TAS\TASInputManager.h">
       <Filter>TAS</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\TAS\KeyMovieFrame.h" />
+    <ClInclude Include="..\..\TAS\KeyMovieFrame.h">
+      <Filter>TAS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\wxResources.rc">

@@ -10,8 +10,8 @@ class KeyMovieFrame : public wxDialog
 public:
 	KeyMovieFrame(wxWindow *parent);
 
-	wxFileName& getFile() const;
-	wxString& getAuthor() const;
+	wxString getFile() const;
+	wxString getAuthor() const;
 	int getFrom() const;
 	
 private:

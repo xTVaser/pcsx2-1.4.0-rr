@@ -631,35 +631,28 @@ void MainEmuFrame::Menu_Lua_Open_Click(wxCommandEvent &event)
 }
 //------------//
 //--TAS--//
-void KeyMovie_Open(wxWindow * parent,bool fReadOnly)
+void MainEmuFrame::Menu_KeyMovie_Record(wxCommandEvent &event)
 {
 	g_KeyMovie.Stop();
 
-	/*
-	// wxFileDialog
-	wxFileDialog openFileDialog(parent, _("Select P2M2 record file."), L"", L"",
-		L"p2m2 file(*.p2m2)|*.p2m2", wxFD_OPEN);
-	if (openFileDialog.ShowModal() == wxID_CANCEL)return;	// cancel
-	wxString path = openFileDialog.GetPath();
-	g_KeyMovie.Start(path, fReadOnly);
-	*/
-
 	KeyMovieFrame* keyMovieFrame = wxGetApp().GetKeyMovieFramePtr();
 	if (keyMovieFrame) {
-		if (keyMovieFrame->ShowModal() == wxID_OK) {
-			Console.WriteLn("OK");
-			//Console.WriteLn(keyMovieFrame->getFile().GetFullName());
-			//Console.WriteLn(keyMovieFrame->getAuthor());
-		}
+		if (keyMovieFrame->ShowModal() == wxID_CANCEL)
+			return;
+
+		g_KeyMovie.Start(keyMovieFrame->getFile(), false);
+		g_KeyMovieHeader.setAuthor(keyMovieFrame->getAuthor());
 	}
-}
-void MainEmuFrame::Menu_KeyMovie_Record(wxCommandEvent &event)
-{
-	KeyMovie_Open(this,false);
 }
 void MainEmuFrame::Menu_KeyMovie_Play(wxCommandEvent &event)
 {
-	KeyMovie_Open(this, true);
+	g_KeyMovie.Stop();
+
+	wxFileDialog openFileDialog(this, _("Select P2M2 record file."), L"", L"",
+		L"p2m2 file(*.p2m2)|*.p2m2", wxFD_OPEN);
+	if (openFileDialog.ShowModal() == wxID_CANCEL)return;	// cancel
+	wxString path = openFileDialog.GetPath();
+	g_KeyMovie.Start(path, true);
 }
 void MainEmuFrame::Menu_KeyMovie_Stop(wxCommandEvent &event)
 {
