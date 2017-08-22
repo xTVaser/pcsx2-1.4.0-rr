@@ -635,12 +635,18 @@ void KeyMovie_Open(wxWindow * parent,bool fReadOnly)
 {
 	g_KeyMovie.Stop();
 
+	/*
 	// wxFileDialog
 	wxFileDialog openFileDialog(parent, _("Select P2M2 record file."), L"", L"",
 		L"p2m2 file(*.p2m2)|*.p2m2", wxFD_OPEN);
 	if (openFileDialog.ShowModal() == wxID_CANCEL)return;	// cancel
 	wxString path = openFileDialog.GetPath();
 	g_KeyMovie.Start(path, fReadOnly);
+	*/
+
+	KeyMovieFrame* keyMovieFrame = wxGetApp().GetKeyMovieFramePtr();
+	if (keyMovieFrame)
+		keyMovieFrame->Show();
 }
 void MainEmuFrame::Menu_KeyMovie_Record(wxCommandEvent &event)
 {

@@ -27,6 +27,7 @@
 #include "RecentIsoList.h"
 #include "TAS/KeyEditor.h"//--TAS--//
 #include "TAS/VirtualPad.h"
+#include "TAS/KeyMovieFrame.h"
 
 class DisassemblyDialog;
 
@@ -529,6 +530,7 @@ protected:
 	wxWindowID			m_id_LuaFrame;//--LuaEngine--//
 	wxWindowID			m_id_KeyEditor;//--TAS--//
 	wxWindowID			m_id_VirtualPad[2];
+	wxWindowID			m_id_KeyMovieFrame;
 
 	wxKeyEvent			m_kevt;
 
@@ -558,6 +560,9 @@ public:
 	VirtualPad *		GetVirtualPadPtr(int port) const {
 		if (port < 0 || port > 1) return NULL;
 		return (VirtualPad*)wxWindow::FindWindowById(m_id_VirtualPad[port]);
+	}
+	KeyMovieFrame *		GetKeyMovieFramePtr() const {
+		return (KeyMovieFrame*)wxWindow::FindWindowById(m_id_KeyMovieFrame);
 	}
 
 	void enterDebugMode();

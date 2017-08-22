@@ -88,6 +88,10 @@ void Pcsx2App::OpenMainFrame()
 	VirtualPad *virtualPad1 = new VirtualPad(mainFrame, 1);
 	m_id_VirtualPad[1] = virtualPad1->GetId();
 
+	// Movie Frame
+	KeyMovieFrame *keyMovieFrame = new KeyMovieFrame(mainFrame);
+	m_id_KeyMovieFrame = keyMovieFrame->GetId();
+
 	if (g_Conf->EmuOptions.Debugger.ShowDebuggerOnStart)
 		disassembly->Show();
 

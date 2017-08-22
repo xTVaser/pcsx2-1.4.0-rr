@@ -464,6 +464,7 @@
     <ClCompile Include="..\..\sif2.cpp" />
     <ClCompile Include="..\..\TAS\KeyEditor.cpp" />
     <ClCompile Include="..\..\TAS\KeyMovie.cpp" />
+    <ClCompile Include="..\..\TAS\KeyMovieFrame.cpp" />
     <ClCompile Include="..\..\TAS\MovieControle.cpp" />
     <ClCompile Include="..\..\TAS\PadData.cpp" />
     <ClCompile Include="..\..\TAS\KeyMovieOnFile.cpp" />
@@ -758,6 +759,7 @@
     <ClInclude Include="..\..\PrecompiledHeader.h" />
     <ClInclude Include="..\..\TAS\KeyEditor.h" />
     <ClInclude Include="..\..\TAS\KeyMovie.h" />
+    <ClInclude Include="..\..\TAS\KeyMovieFrame.h" />
     <ClInclude Include="..\..\TAS\MovieControle.h" />
     <ClInclude Include="..\..\TAS\PadData.h" />
     <ClInclude Include="..\..\TAS\KeyMovieOnFile.h" />
