@@ -645,8 +645,13 @@ void KeyMovie_Open(wxWindow * parent,bool fReadOnly)
 	*/
 
 	KeyMovieFrame* keyMovieFrame = wxGetApp().GetKeyMovieFramePtr();
-	if (keyMovieFrame)
-		keyMovieFrame->Show();
+	if (keyMovieFrame) {
+		if (keyMovieFrame->ShowModal() == wxID_OK) {
+			Console.WriteLn("OK");
+			//Console.WriteLn(keyMovieFrame->getFile().GetFullName());
+			//Console.WriteLn(keyMovieFrame->getAuthor());
+		}
+	}
 }
 void MainEmuFrame::Menu_KeyMovie_Record(wxCommandEvent &event)
 {

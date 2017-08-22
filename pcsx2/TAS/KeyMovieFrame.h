@@ -9,6 +9,10 @@ class KeyMovieFrame : public wxDialog
 {
 public:
 	KeyMovieFrame(wxWindow *parent);
+
+	wxFileName& getFile() const;
+	wxString& getAuthor() const;
+	int getFrom() const;
 	
 private:
 	wxStaticText *m_fileLabel;
@@ -17,11 +21,5 @@ private:
 	wxTextCtrl *m_author;
 	wxStaticText *m_fromLabel;
 	wxChoice *m_fromChoice;
-	wxButton *m_ok;
-	wxButton *m_cancel;
-
-private:
-	void OnOK(wxCommandEvent &event);
-	void OnCancel(wxCommandEvent &event);
 };
 
