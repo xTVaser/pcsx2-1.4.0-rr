@@ -1,5 +1,7 @@
 #include "PrecompiledHeader.h"
 
+#include "App.h"
+
 #include "KeyMovieOnFile.h"
 
 #define HEADER_SIZE (sizeof(KeyMovieHeader)+4+4)
@@ -9,6 +11,7 @@
 
 #define SEEKPOINT_FRAMEMAX (sizeof(KeyMovieHeader))
 #define SEEKPOINT_UNDOCOUNT (sizeof(KeyMovieHeader)+4)
+#define SEEKPOINT_SAVESTATE (SEEKPOINT_UNDOCOUNT+4)
 
 long KeyMovieOnFile::_getBlockSeekPoint(const long & frame)
 {
@@ -18,7 +21,7 @@ long KeyMovieOnFile::_getBlockSeekPoint(const long & frame)
 //----------------------------------
 // file
 //----------------------------------
-bool KeyMovieOnFile::Open(const wxString fn, bool fNewOpen)
+bool KeyMovieOnFile::Open(const wxString fn, bool fNewOpen, VmStateBuffer *ss)
 {
 	Close();
 	wxString mode = L"rb+";
@@ -34,12 +37,26 @@ bool KeyMovieOnFile::Open(const wxString fn, bool fNewOpen)
 		return false;
 	}
 	filename = fn;
+
+	if (ss) {
+		savestate.fromSavestate = true;
+		savestate.savestatesize = ss->GetLength();
+		savestate.savestate.MakeRoomFor(ss->GetLength());
+		for (size_t i = 0; i < ss->GetLength(); i++) {
+			savestate.savestate[i] = (*ss)[i];
+		}
+	}
+	else {
+		UI_DisableSysReset();
+		sApp.SysExecute();
+	}
 	return true;
 }
 bool KeyMovieOnFile::Close()
 {
 	if (fp == NULL)return false;
 	writeHeader();
+	writeSavestate();
 	fclose(fp);
 	fp = NULL;
 	filename = "";
@@ -171,12 +188,40 @@ bool KeyMovieOnFile::readHeaderAndCheck()
 	if (fread(&header, sizeof(KeyMovieHeader), 1, fp) != 1)return false;
 	if (fread(&MaxFrame, 4, 1, fp) != 1)return false;
 	if (fread(&UndoCount, 4, 1, fp) != 1)return false;
+	if (fread(&savestate.fromSavestate, sizeof(bool), 1, fp) != 1) return false;
+	if (savestate.fromSavestate) {
+		// We read the size (and the savestate) only if we must
+		if (fread(&savestate.savestatesize, sizeof(savestate.savestatesize), 1, fp) != 1) return false;
+		if (savestate.savestatesize == 0) {
+			Console.WriteLn(Color_StrongRed, L"[KeyMovie] The size of the savestate is invalid.");
+			return false;
+		}
+
+		savestate.savestate.MakeRoomFor(savestate.savestatesize);
+		// We read "savestatesize" * the size of a cell
+		if (fread(savestate.savestate.GetPtr(), sizeof(savestate.savestate[0]), savestate.savestatesize, fp)
+			!= savestate.savestatesize) return false;
+
+		// We load the savestate
+		memLoadingState load(savestate.savestate);
+		UI_DisableSysActions();
+		GetCoreThread().Pause();
+		SysClearExecutionCache();
+		load.FreezeAll();
+		GetCoreThread().Resume();
+	}
+	else {
+		// We restart the game
+		UI_DisableSysReset();
+		sApp.SysExecute();
+	}
+
 	// ID
 	if (header.ID != 0xCC) {
 		return false;
 	}
 	// ver
-	if (header.version != 1) {
+	if (header.version != 2) {
 		return false;
 	}
 	return true;
@@ -186,6 +231,19 @@ bool KeyMovieOnFile::writeHeader()
 	if (fp == NULL)return false;
 	rewind(fp);
 	if (fwrite(&header, sizeof(KeyMovieHeader), 1, fp) != 1) return false;
+	return true;
+}
+bool KeyMovieOnFile::writeSavestate()
+{
+	if (fp == NULL) return false;
+	fseek(fp, SEEKPOINT_SAVESTATE, SEEK_SET);
+	if (fwrite(&savestate.fromSavestate, sizeof(bool), 1, fp) != 1) return false;
+
+	if (savestate.fromSavestate) {
+		if (fwrite(&savestate.savestatesize, sizeof(savestate.savestatesize), 1, fp) != 1) return false;
+		if (fwrite(savestate.savestate.GetPtr(), sizeof(savestate.savestate[0]), savestate.savestatesize, fp)
+			!= savestate.savestatesize) return false;
+	}
 	return true;
 }
 bool KeyMovieOnFile::writeMaxFrame()
@@ -358,6 +416,11 @@ void KeyMovieOnFile::ConvertOld(wxString filename)
 	fclose(fp);
 	fclose(fp2);
 	Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Convert success. OutFile[%s]", WX_STR(outfile)));
+}
+
+void KeyMovieOnFile::ConvertFromV1(wxString filename)
+{
+	// TODO
 }
 
 

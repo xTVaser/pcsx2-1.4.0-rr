@@ -103,18 +103,18 @@ void KeyMovie::Stop() {
 //----------------------------------
 // start
 //----------------------------------
-void KeyMovie::Start(wxString FileName,bool fReadOnly)
+void KeyMovie::Start(wxString FileName,bool fReadOnly, VmStateBuffer* ss)
 {
 	g_MovieControle.Pause();
 	Stop();
 
 	if (fReadOnly)
 	{
-		if (!keyMovieData.Open(FileName, false)) {
+		if (!keyMovieData.Open(FileName, false, ss)) {
 			return;
 		}
 		if (!keyMovieData.readHeaderAndCheck()) {
-			Console.WriteLn(Color_StrongBlue, L"[KeyMovie]This file is not KeyMovie file.");
+			Console.WriteLn(Color_StrongBlue, L"[KeyMovie]This file is not a correct KeyMovie file.");
 			keyMovieData.Close();
 			return;
 		}
@@ -138,7 +138,7 @@ void KeyMovie::Start(wxString FileName,bool fReadOnly)
 			Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Create backup file.[%s]", bpfile) );
 		}
 		// create
-		if (!keyMovieData.Open(FileName, true)) {
+		if (!keyMovieData.Open(FileName, true, ss)) {
 			return;
 		}
 		// cdrom
@@ -147,12 +147,12 @@ void KeyMovie::Start(wxString FileName,bool fReadOnly)
 			keyMovieData.getHeader().setCdrom(Path::GetFilename(g_Conf->CurrentIso));
 		}
 		keyMovieData.writeHeader();
+		keyMovieData.writeSavestate();
 
 		state = RECORD;
 		Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Start new record.[%s]",FileName ));
 	}
 }
-
 
 //----------------------------------
 // shortcut key

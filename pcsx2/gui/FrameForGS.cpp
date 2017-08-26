@@ -566,7 +566,6 @@ GSFrame::GSFrame( const wxString& title)
 	: wxFrame(NULL, wxID_ANY, title, g_Conf->GSWindow.WindowPos)
 	, m_timer_UpdateTitle( this )
 {
-		Console.DoWriteLn("Test");
 	SetIcons( wxGetApp().GetIconBundle() );
 	SetBackgroundColour( *wxBLACK );
 

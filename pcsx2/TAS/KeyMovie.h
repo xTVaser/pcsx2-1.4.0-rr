@@ -18,7 +18,7 @@ public:
 
 	// menu bar
 	void Stop();
-	void Start(wxString filename, bool fReadOnly);
+	void Start(wxString filename, bool fReadOnly, VmStateBuffer* ss = nullptr);
 
 	// shortcut key
 	void RecordModeToggle();

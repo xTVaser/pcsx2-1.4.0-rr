@@ -24,7 +24,8 @@ KeyMovieFrame::KeyMovieFrame(wxWindow *parent)
 	p.x += 80;
 	p.y = 5;
 	s.x = 300;
-	m_filePicker = new wxFilePickerCtrl(panel, File, wxEmptyString, "File", L"p2m2 file(*.p2m2)|*.p2m2", p, s);
+	m_filePicker = new wxFilePickerCtrl(panel, File, wxEmptyString, "File", L"p2m2 file(*.p2m2)|*.p2m2", p, s,
+		wxFLP_SAVE | wxFLP_OVERWRITE_PROMPT | wxFLP_USE_TEXTCTRL);
 
 	// Author
 	p.x = 15;
@@ -43,6 +44,7 @@ KeyMovieFrame::KeyMovieFrame(wxWindow *parent)
 	choices.Add("Power-On");
 	choices.Add("Now");
 	m_fromChoice = new wxChoice(panel, From, p, wxDefaultSize, choices);
+	m_fromChoice->SetSelection(0);
 	
 	auto* buttons = CreateButtonSizer(wxOK | wxCANCEL);
 

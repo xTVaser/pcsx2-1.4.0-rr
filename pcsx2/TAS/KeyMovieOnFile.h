@@ -3,6 +3,7 @@
 #define __KEY_MOVIE_ONFILE_H__
 
 #include "PadData.h"
+#include "System.h"
 
 //----------------------------
 // header
@@ -11,7 +12,7 @@
 //----------------------------
 struct KeyMovieHeader
 {
-	u8 version = 1;
+	u8 version = 2;
 	u8 ID = 0xCC;//特に意味はなし、keyファイルか判定用のID
 
 	char emu[50] = "PCSX2-1.4.0-rr";
@@ -25,6 +26,17 @@ public:
 };
 
 //----------------------------
+// KeyMovieSavestate
+// Contains info about the starting point of the movie
+//----------------------------
+struct KeyMovieSavestate
+{
+	bool fromSavestate = false; // Whether we start from the savestate or from power-on
+	unsigned int savestatesize; // The size of the savestate
+	VmStateBuffer savestate; // The savestate
+};
+
+//----------------------------
 // KeyMovieOnFile
 //----------------------------
 class KeyMovieOnFile {
@@ -34,7 +46,7 @@ public:
 public:
 
 	// file
-	bool Open(const wxString fn, bool fNewOpen);
+	bool Open(const wxString fn, bool fNewOpen, VmStateBuffer *ss = nullptr);
 	bool Close();
 
 	// movie
@@ -50,6 +62,7 @@ public:
 	// convert
 	void ConvertP2M(wxString filename);
 	void ConvertOld(wxString filename);
+	void ConvertFromV1(wxString filename);
 
 private:
 	FILE * fp=NULL;
@@ -73,6 +86,7 @@ public:
 	const wxString & getFilename() { return filename; }
 
 	bool writeHeader();
+	bool writeSavestate();
 	bool writeMaxFrame();
 
 	bool readHeaderAndCheck();
@@ -81,6 +95,7 @@ public:
 
 private:
 	KeyMovieHeader header;
+	KeyMovieSavestate savestate;
 	unsigned long  MaxFrame = 0;
 	unsigned long  UndoCount = 0;
 

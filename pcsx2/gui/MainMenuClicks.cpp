@@ -640,7 +640,16 @@ void MainEmuFrame::Menu_KeyMovie_Record(wxCommandEvent &event)
 		if (keyMovieFrame->ShowModal() == wxID_CANCEL)
 			return;
 
-		g_KeyMovie.Start(keyMovieFrame->getFile(), false);
+		// Frow Power-On
+		if (keyMovieFrame->getFrom() == 0)
+			g_KeyMovie.Start(keyMovieFrame->getFile(), false);
+		// From Now
+		else if (keyMovieFrame->getFrom() == 1) {
+			VmStateBuffer savestate;
+			memSavingState memSS(savestate);
+			memSS.FreezeAll();
+			g_KeyMovie.Start(keyMovieFrame->getFile(), false, &savestate);
+		}
 		g_KeyMovieHeader.setAuthor(keyMovieFrame->getAuthor());
 	}
 }
