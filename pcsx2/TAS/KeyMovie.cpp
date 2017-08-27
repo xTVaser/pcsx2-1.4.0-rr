@@ -110,7 +110,7 @@ void KeyMovie::Start(wxString FileName,bool fReadOnly, VmStateBuffer* ss)
 
 	if (fReadOnly)
 	{
-		if (!keyMovieData.Open(FileName, false, ss)) {
+		if (!keyMovieData.Open(FileName, false)) {
 			return;
 		}
 		if (!keyMovieData.readHeaderAndCheck()) {
@@ -152,6 +152,8 @@ void KeyMovie::Start(wxString FileName,bool fReadOnly, VmStateBuffer* ss)
 		state = RECORD;
 		Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Start new record.[%s]",FileName ));
 	}
+	// In every case, we reset the g_FrameCount
+	g_FrameCount = 0;
 }
 
 //----------------------------------

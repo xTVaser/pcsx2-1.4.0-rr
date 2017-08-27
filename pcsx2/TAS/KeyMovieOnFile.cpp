@@ -15,7 +15,14 @@
 
 long KeyMovieOnFile::_getBlockSeekPoint(const long & frame)
 {
-	return HEADER_SIZE + (frame)*BLOCK_SIZE;
+	if (savestate.fromSavestate) {
+		return HEADER_SIZE
+			+ sizeof(bool) + sizeof(savestate.savestatesize) + sizeof(savestate.savestate[0]) * savestate.savestatesize
+			+ frame * BLOCK_SIZE;
+	}
+	else {
+		return HEADER_SIZE + sizeof(bool) + (frame)*BLOCK_SIZE;
+	}
 }
 
 //----------------------------------
@@ -38,17 +45,19 @@ bool KeyMovieOnFile::Open(const wxString fn, bool fNewOpen, VmStateBuffer *ss)
 	}
 	filename = fn;
 
-	if (ss) {
-		savestate.fromSavestate = true;
-		savestate.savestatesize = ss->GetLength();
-		savestate.savestate.MakeRoomFor(ss->GetLength());
-		for (size_t i = 0; i < ss->GetLength(); i++) {
-			savestate.savestate[i] = (*ss)[i];
+	if (fNewOpen) {
+		if (ss) {
+			savestate.fromSavestate = true;
+			savestate.savestatesize = ss->GetLength();
+			savestate.savestate.MakeRoomFor(ss->GetLength());
+			for (size_t i = 0; i < ss->GetLength(); i++) {
+				savestate.savestate[i] = (*ss)[i];
+			}
 		}
-	}
-	else {
-		UI_DisableSysReset();
-		sApp.SysExecute();
+		else {
+			UI_DisableSysReset();
+			sApp.SysExecute();
+		}
 	}
 	return true;
 }
