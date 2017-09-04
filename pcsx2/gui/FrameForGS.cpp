@@ -23,6 +23,7 @@
 #include "MSWstuff.h"
 
 #include "Counters.h" //--TAS--// use "g_FrameCount"
+#include "TAS/KeyMovie.h"
 
 #include <wx/utils.h>
 #include <wx/graphics.h>
@@ -773,17 +774,28 @@ void GSFrame::OnUpdateTitle( wxTimerEvent& evt )
 	const u64& smode2 = *(u64*)PS2GS_BASE(GS_SMODE2);
 	wxString omodef = (smode2 & 2) ? templates.OutputFrame : templates.OutputField;
 	wxString omodei = (smode2 & 1) ? templates.OutputInterlaced : templates.OutputProgressive;
+	wxString movieMode;
+	switch (g_KeyMovie.getModeState()) {
+	case KeyMovie::KEY_MOVIE_MODE::RECORD:
+		movieMode = "Recording";
+		break;
+	case KeyMovie::KEY_MOVIE_MODE::REPLAY:
+		movieMode = "Replaying";
+		break;
+	case KeyMovie::KEY_MOVIE_MODE::NONE:
+		movieMode = "No movie";
+		break;
+	}
 
 	wxString title = templates.TitleTemplate;
-	title.Replace(L"${frame}", pxsFmt(L"%d", g_FrameCount));	//--TAS--//
+	title.Replace(L"${frame}",		pxsFmt(L"%d", g_FrameCount));	//--TAS--//
+	title.Replace(L"${maxFrame}",	pxsFmt(L"%d", g_KeyMovie.getKeyMovieData().getMaxFrame()));
+	title.Replace(L"${mode}",		movieMode);
 	title.Replace(L"${slot}",		pxsFmt(L"%d", States_GetCurrentSlot()));
 	title.Replace(L"${limiter}",	limiterStr);
 	title.Replace(L"${speed}",		pxsFmt(L"%3d%%", lround(per)));
 	title.Replace(L"${vfps}",		pxsFmt(L"%.02f", fps));
 	title.Replace(L"${cpuusage}",	cpuUsage);
-	title.Replace(L"${omodef}",		omodef);
-	title.Replace(L"${omodei}",		omodei);
-	title.Replace(L"${gsdx}",		fromUTF8(gsDest));
 
 	SetTitle(title);
 }

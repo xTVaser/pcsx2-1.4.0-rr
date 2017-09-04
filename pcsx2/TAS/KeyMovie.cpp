@@ -75,11 +75,10 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
 	}
 	else if (state == REPLAY)
 	{
-		if (keyMovieData.getMaxFrame() < g_FrameCount)
+		if (keyMovieData.getMaxFrame() <= g_FrameCount)
 		{
-			// end replay
+			// Pause the emulation but the movie is not closed
 			g_MovieControle.Pause();
-			Stop();
 			return;
 		}
 		u8 tmp = 0;
