@@ -5,6 +5,7 @@
 #include "KeyMovieOnFile.h"
 
 #define HEADER_SIZE (sizeof(KeyMovieHeader)+4+4)
+#define SAVESTATE_HEADER_SIZE (sizeof(bool) + sizeof(savestate.savestatesize) + sizeof(savestate.savestate[0]) * savestate.savestatesize)
 #define BLOCK_HEADER_SIZE (0)
 #define BLOCK_DATA_SIZE (6*2)
 #define BLOCK_SIZE (BLOCK_HEADER_SIZE+BLOCK_DATA_SIZE)
@@ -17,7 +18,7 @@ long KeyMovieOnFile::_getBlockSeekPoint(const long & frame)
 {
 	if (savestate.fromSavestate) {
 		return HEADER_SIZE
-			+ sizeof(bool) + sizeof(savestate.savestatesize) + sizeof(savestate.savestate[0]) * savestate.savestatesize
+			+ SAVESTATE_HEADER_SIZE
 			+ frame * BLOCK_SIZE;
 	}
 	else {
