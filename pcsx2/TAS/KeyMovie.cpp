@@ -70,7 +70,34 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
 	const u8 &nowBuf = buf[BufCount];
 	if (state == RECORD)
 	{
-		keyMovieData.updateFrameMax(g_FrameCount);
+		keyMovieData.updateFrameMax(g_FrameCount); // controller port 1 and 2's buffers are read here
+		/*
+		255
+		255
+		127
+		127
+		127
+		127
+		- port 1
+		255
+		255
+		127
+		127
+		127
+		127
+
+		with x pressed
+		255
+		191 <--- 
+		127
+		127
+		127
+		127
+		255
+		255
+		127
+		127
+		127*/
 		keyMovieData.writeKeyBuf(g_FrameCount, port, bufIndex, nowBuf);
 	}
 	else if (state == REPLAY)
