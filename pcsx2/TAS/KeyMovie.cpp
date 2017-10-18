@@ -99,6 +99,13 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
 		127
 		127*/
 		keyMovieData.writeKeyBuf(g_FrameCount, port, bufIndex, nowBuf);
+		std::string converted = std::to_string(nowBuf);
+		if (port == 1) {
+			std::cout << "\n";
+		}
+		else {
+			std::cout << converted << " ";
+		}
 	}
 	else if (state == REPLAY)
 	{
