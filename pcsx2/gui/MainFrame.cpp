@@ -572,10 +572,11 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	m_MovieSubmenu.Append(MenuId_KeyMovie_Play, _("Play"));
 	m_MovieSubmenu.Append(MenuId_KeyMovie_Stop, _("Stop"));
 	m_MovieSubmenu.AppendSeparator();
-	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertP2M, _("Convert(p2m -> p2m2)"));
-	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertOld, _("Convert(v1.0~v1.2 -> v2.0 later)"));
-	m_MovieSubmenu.AppendSeparator();
 	m_MovieSubmenu.Append(MenuId_KeyMovie_OpenKeyEditor, _("Open KeyEditor Window..."));
+	m_MovieSubmenu.AppendSeparator();
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertOld, _("Convert Movie (After v1.0)"));
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertOld, _("Convert Movie (v1.0)")); // TODO: ye
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertP2M, _("Convert Legacy Movie (p2m -> p2m2)"));
 	//-------//
 	
 	//--LuaEngine--//

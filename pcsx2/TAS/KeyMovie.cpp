@@ -29,10 +29,13 @@ void SaveStateBase::keymovieFreeze()
 //----------------------------------
 // key interrupt
 //----------------------------------
-void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
+void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & bufCount, u8 buf[])
 {
-	if (port < 0 || 1 < port )return;
-	if (BufCount < 1 || 8 < BufCount)return;
+	if (port < 0 || 1 < port )
+		return;
+	// this was most likely the problem, it skips the pressure sensitive portions
+	if (bufCount < 3)
+		return;
 
 	//==========================
 	// キー入力フレームの確認
@@ -44,7 +47,7 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
 	//	case 0x42:
 	//		query.response[2] = 0x5A;
 	//==========================
-	if (BufCount == 1) {
+	if (bufCount == 1) {
 		if (data == 0x42)
 		{
 			fInterruptFrame = true;
@@ -52,60 +55,30 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
 		else {
 			fInterruptFrame = false;
 		}
+		fInterruptFrame = true;
 	}
-	else if ( BufCount == 2 ){
-		if (buf[BufCount] != 0x5A) {
+	else if ( bufCount == 2 ){
+		if (buf[bufCount] != 0x5A) {
 			fInterruptFrame = false;
 		}
 	}
-	if (!fInterruptFrame)return;
+	//if (!fInterruptFrame)
+	//	return;
 
-	int bufIndex = BufCount - 3;
-	if (bufIndex < 0 || 6 < bufIndex)return;
-	if (state == NONE)return;
+	
+	if (state == NONE)
+		return;
+
+	
 
 	//---------------
 	// read/write
 	//---------------
-	const u8 &nowBuf = buf[BufCount];
+	const u8 &nowBuf = buf[bufCount];
 	if (state == RECORD)
 	{
-		keyMovieData.updateFrameMax(g_FrameCount); // controller port 1 and 2's buffers are read here
-		/*
-		255
-		255
-		127
-		127
-		127
-		127
-		- port 1
-		255
-		255
-		127
-		127
-		127
-		127
-
-		with x pressed
-		255
-		191 <--- 
-		127
-		127
-		127
-		127
-		255
-		255
-		127
-		127
-		127*/
-		keyMovieData.writeKeyBuf(g_FrameCount, port, bufIndex, nowBuf);
-		std::string converted = std::to_string(nowBuf);
-		if (port == 1) {
-			std::cout << "\n";
-		}
-		else {
-			std::cout << converted << " ";
-		}
+		keyMovieData.updateFrameMax(g_FrameCount);
+		keyMovieData.writeKeyBuf(g_FrameCount, port, bufCount - 3, nowBuf);
 	}
 	else if (state == REPLAY)
 	{
@@ -116,8 +89,8 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
 			return;
 		}
 		u8 tmp = 0;
-		if (keyMovieData.readKeyBuf(tmp, g_FrameCount, port, bufIndex)) {
-			buf[BufCount] = tmp;
+		if (keyMovieData.readKeyBuf(tmp, g_FrameCount, port, bufCount - 3)) {
+			buf[bufCount] = tmp;
 		}
 	}
 }

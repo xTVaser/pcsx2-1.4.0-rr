@@ -306,6 +306,7 @@ void KeyMovieHeader::init()
 // convert p2m -> p2m2
 // The p2m file is a file generated with the following URL.
 // https://code.google.com/archive/p/pcsx2-rr/
+// Legacy Conversion
 //===========================================================
 void KeyMovieOnFile::ConvertP2M(wxString filename)
 {
@@ -370,6 +371,7 @@ void KeyMovieOnFile::ConvertP2M(wxString filename)
 
 //===========================================================
 // ver 1.0~1.2 -> ver 2.0~
+// If the file does not have a version header, then we can assume it is prior to version....3?
 //===========================================================
 void KeyMovieOnFile::ConvertOld(wxString filename)
 {
