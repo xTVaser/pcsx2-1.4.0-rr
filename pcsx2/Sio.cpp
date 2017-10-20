@@ -177,6 +177,9 @@ SIO_WRITE sioWriteController(u8 data)
 	default: 
 		sio.buf[sio.bufCount] = PADpoll(data);
 
+		// -- TAS Debugging Helpful -- //
+		// Prints controlller data every frame //
+		/*
 		std::string converted = std::to_string(sio.buf[sio.bufCount]);
 		if (sio.port == 0 && sio.bufCount > 2) { // skip first two bytes because they dont seem to matter
 			if (sio.bufCount == 3) {
@@ -191,6 +194,7 @@ SIO_WRITE sioWriteController(u8 data)
 			}
 			std::cout << converted << " ";
 		}
+		*/
 
 
 		//--TAS--//
