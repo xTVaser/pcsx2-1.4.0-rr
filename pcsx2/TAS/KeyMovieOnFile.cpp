@@ -7,7 +7,7 @@
 #define HEADER_SIZE (sizeof(KeyMovieHeader)+4+4)
 #define SAVESTATE_HEADER_SIZE (sizeof(bool) + sizeof(savestate.savestatesize) + sizeof(savestate.savestate[0]) * savestate.savestatesize)
 #define BLOCK_HEADER_SIZE (0) 
-#define BLOCK_DATA_SIZE (6*2) // TODO now wrong
+#define BLOCK_DATA_SIZE (18*2)
 #define BLOCK_SIZE (BLOCK_HEADER_SIZE+BLOCK_DATA_SIZE)
 
 #define SEEKPOINT_FRAMEMAX (sizeof(KeyMovieHeader))
@@ -80,8 +80,7 @@ bool KeyMovieOnFile::writeKeyBuf(const uint & frame, const uint port, const uint
 {
 	if (fp == NULL)return false;
 
-	// TODO: now wrong
-	long seek = _getBlockSeekPoint(frame) + BLOCK_HEADER_SIZE + 6 * port + bufIndex;
+	long seek = _getBlockSeekPoint(frame) + BLOCK_HEADER_SIZE + 18 * port + bufIndex;
 	if (fseek(fp, seek, SEEK_SET) != 0){
 		return false;
 	}
@@ -99,8 +98,7 @@ bool KeyMovieOnFile::readKeyBuf(u8 & result,const uint & frame, const uint port,
 {
 	if (fp == NULL)return false;
 
-	// TODO: now wrong
-	long seek = _getBlockSeekPoint(frame) + BLOCK_HEADER_SIZE + 6 * port + bufIndex;
+	long seek = _getBlockSeekPoint(frame) + BLOCK_HEADER_SIZE + 18 * port + bufIndex;
 	if (fseek(fp, seek, SEEK_SET) != 0) {
 		return false;
 	}
@@ -134,8 +132,7 @@ bool KeyMovieOnFile::DeletePadData(unsigned long frame)
 		long seek1 = _getBlockSeekPoint(i+1) + BLOCK_HEADER_SIZE;
 		long seek2 = _getBlockSeekPoint(i) + BLOCK_HEADER_SIZE;
 
-		// TODO: now wrong
-		u8 buf[2][6];
+		u8 buf[2][18];
 		fseek(fp, seek1, SEEK_SET);
 		fread(buf, 1, BLOCK_DATA_SIZE, fp);
 		fseek(fp, seek2, SEEK_SET);
@@ -157,8 +154,7 @@ bool KeyMovieOnFile::InsertPadData(unsigned long frame, const PadData& key)
 		long seek1 = _getBlockSeekPoint(i) + BLOCK_HEADER_SIZE;
 		long seek2 = _getBlockSeekPoint(i+1) + BLOCK_HEADER_SIZE;
 
-		// TODO: now wrong
-		u8 buf[2][6];
+		u8 buf[2][18];
 		fseek(fp, seek1, SEEK_SET);
 		fread(buf, 1, BLOCK_DATA_SIZE, fp);
 		fseek(fp, seek2, SEEK_SET);
