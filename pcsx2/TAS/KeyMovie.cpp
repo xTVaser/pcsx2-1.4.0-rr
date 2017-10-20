@@ -34,8 +34,8 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & bufCount, u8 buf[])
 	if (port < 0 || 1 < port )
 		return;
 	// this was most likely the problem, it skips the pressure sensitive portions
-	if (bufCount < 3)
-		return;
+	//if (bufCount < 3)
+	//	return;
 
 	//==========================
 	// キー入力フレームの確認
@@ -55,21 +55,22 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & bufCount, u8 buf[])
 		else {
 			fInterruptFrame = false;
 		}
-		fInterruptFrame = true;
+		//fInterruptFrame = true;
 	}
 	else if ( bufCount == 2 ){
 		if (buf[bufCount] != 0x5A) {
 			fInterruptFrame = false;
 		}
 	}
-	//if (!fInterruptFrame)
-	//	return;
+	if (!fInterruptFrame)
+		return;
 
 	
 	if (state == NONE)
 		return;
 
-	
+	if (bufCount < 3)
+		return;
 
 	//---------------
 	// read/write

@@ -300,75 +300,6 @@ void KeyMovieHeader::init()
 	memset(cdrom, 0, ArraySize(cdrom));
 }
 
-
-
-//===========================================================
-// convert p2m -> p2m2
-// The p2m file is a file generated with the following URL.
-// https://code.google.com/archive/p/pcsx2-rr/
-// Legacy Conversion
-//===========================================================
-void KeyMovieOnFile::ConvertP2M(wxString filename)
-{
-	Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Convert start.[%s]", WX_STR(filename) ));
-	FILE * fp;
-	FILE * fp2;
-	fopen_s(&fp, filename, "rb");
-	if (fp == NULL) {
-		Console.WriteLn(Color_StrongBlue, L"[KeyMovie]Convert fail: %s ", WX_STR(wxString(strerror(errno))) );
-		return;
-	}
-	wxString outfile = wxString::Format(L"%s.p2m2", filename);
-	fopen_s(&fp2, outfile, "wb");
-	if (fp2 == NULL) {
-		Console.WriteLn(Color_StrongBlue, L"[KeyMovie]Convert fail: %s ", WX_STR(wxString(strerror(errno))));
-		fclose(fp);
-		return;
-	}
-
-	//--------------------------------------
-	// pcsx2_rr ‚Ì“à—e
-	// fread(&g_Movie.FrameMax, 4, 1, g_Movie.File);
-	// fread(&g_Movie.Rerecs, 4, 1, g_Movie.File);
-	// fread(g_PadData[0]+2, 6, 1, g_Movie.File);
-	//--------------------------------------
-
-	//------
-	//head 
-	//------
-	KeyMovieHeader header;
-	u32 maxframe=0;
-	u32 undo = 0;
-	fread(&maxframe, 4, 1, fp);
-	fread(&undo, 4, 1, fp);
-	MaxFrame = maxframe;
-	UndoCount = undo;
-	fwrite(&header, sizeof(KeyMovieHeader), 1, fp2);
-	fwrite(&MaxFrame, 4, 1, fp2);
-	fwrite(&UndoCount, 4, 1, fp2);
-
-	//------
-	// frame
-	//------
-	for (unsigned long frame = 0; frame < maxframe; frame++)
-	{
-		u8 p1key[6];
-		fread(p1key, 6, 1, fp);
-
-		long seek = _getBlockSeekPoint(frame) + BLOCK_HEADER_SIZE;
-		fseek(fp2, seek, SEEK_SET);
-		fwrite(p1key, 6, 1, fp2);
-
-		// 2p
-		u8 p2key[6] = {255,255,127,127,127,127};
-		fwrite(p2key, 6, 1, fp2);
-
-	}
-	fclose(fp);
-	fclose(fp2);
-	Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Convert success. OutFile[%s]",WX_STR(outfile)));
-}
-
 //===========================================================
 // ver 1.0~1.2 -> ver 2.0~
 // If the file does not have a version header, then we can assume it is prior to version....3?
@@ -386,6 +317,8 @@ void KeyMovieOnFile::ConvertOld(wxString filename)
 	wxString outfile = wxString::Format(L"%s_new.p2m2", filename);
 	fopen_s(&fp2, outfile, "wb");
 	if (fp2 == NULL) {
+		// TODO: add a TAS filter in the console
+		// TODO: keybindings for TAS inputs
 		Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]convert fail: %s ", WX_STR(wxString(strerror(errno)))));
 		fclose(fp);
 		return;
@@ -435,6 +368,71 @@ void KeyMovieOnFile::ConvertFromV1(wxString filename)
 	// TODO
 }
 
+//===========================================================
+// convert p2m -> p2m2
+// The p2m file is a file generated with the following URL.
+// https://code.google.com/archive/p/pcsx2-rr/
+// Legacy Conversion
+//===========================================================
+void KeyMovieOnFile::ConvertP2M(wxString filename)
+{
+	Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Convert start.[%s]", WX_STR(filename)));
+	FILE * fp;
+	FILE * fp2;
+	fopen_s(&fp, filename, "rb");
+	if (fp == NULL) {
+		Console.WriteLn(Color_StrongBlue, L"[KeyMovie]Convert fail: %s ", WX_STR(wxString(strerror(errno))));
+		return;
+	}
+	wxString outfile = wxString::Format(L"%s.p2m2", filename);
+	fopen_s(&fp2, outfile, "wb");
+	if (fp2 == NULL) {
+		Console.WriteLn(Color_StrongBlue, L"[KeyMovie]Convert fail: %s ", WX_STR(wxString(strerror(errno))));
+		fclose(fp);
+		return;
+	}
 
+	//--------------------------------------
+	// pcsx2_rr ‚Ì“à—e
+	// fread(&g_Movie.FrameMax, 4, 1, g_Movie.File);
+	// fread(&g_Movie.Rerecs, 4, 1, g_Movie.File);
+	// fread(g_PadData[0]+2, 6, 1, g_Movie.File);
+	//--------------------------------------
+
+	//------
+	//head 
+	//------
+	KeyMovieHeader header;
+	u32 maxframe = 0;
+	u32 undo = 0;
+	fread(&maxframe, 4, 1, fp);
+	fread(&undo, 4, 1, fp);
+	MaxFrame = maxframe;
+	UndoCount = undo;
+	fwrite(&header, sizeof(KeyMovieHeader), 1, fp2);
+	fwrite(&MaxFrame, 4, 1, fp2);
+	fwrite(&UndoCount, 4, 1, fp2);
+
+	//------
+	// frame
+	//------
+	for (unsigned long frame = 0; frame < maxframe; frame++)
+	{
+		u8 p1key[6];
+		fread(p1key, 6, 1, fp);
+
+		long seek = _getBlockSeekPoint(frame) + BLOCK_HEADER_SIZE;
+		fseek(fp2, seek, SEEK_SET);
+		fwrite(p1key, 6, 1, fp2);
+
+		// 2p
+		u8 p2key[6] = { 255,255,127,127,127,127 };
+		fwrite(p2key, 6, 1, fp2);
+
+	}
+	fclose(fp);
+	fclose(fp2);
+	Console.WriteLn(Color_StrongBlue, wxString::Format(L"[KeyMovie]Convert success. OutFile[%s]", WX_STR(outfile)));
+}
 
 
