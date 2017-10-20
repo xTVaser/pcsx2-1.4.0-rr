@@ -12,7 +12,7 @@
 //----------------------------
 struct KeyMovieHeader
 {
-	u8 version = 2;
+	u8 version = 3;
 	u8 ID = 0xCC;//特に意味はなし、keyファイルか判定用のID
 
 	char emu[50] = "PCSX2-1.4.0-rr";
@@ -60,9 +60,10 @@ public:
 	bool UpdatePadData(unsigned long frame, const PadData& key);
 
 	// convert
-	void ConvertP2M(wxString filename);
-	void ConvertOld(wxString filename);
-	void ConvertFromV1(wxString filename);
+	void ConvertV2ToV3(wxString filename);
+	void ConvertV1_XToV2(wxString filename);
+	void ConvertV1ToV2(wxString filename);
+	void ConvertLegacy(wxString filename);
 
 private:
 	FILE * fp=NULL;

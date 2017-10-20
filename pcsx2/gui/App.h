@@ -175,8 +175,10 @@ enum MenuIdentifiers
 	MenuId_KeyMovie_Record,
 	MenuId_KeyMovie_Play,
 	MenuId_KeyMovie_Stop,
-	MenuId_KeyMovie_ConvertP2M,
-	MenuId_KeyMovie_ConvertOld,
+	MenuId_KeyMovie_ConvertV2ToV3,
+	MenuId_KeyMovie_ConvertV1_XToV2,
+	MenuId_KeyMovie_ConvertV1ToV2,
+	MenuId_KeyMovie_ConvertLegacy,
 	MenuId_KeyMovie_OpenKeyEditor,
 	//-------//
 

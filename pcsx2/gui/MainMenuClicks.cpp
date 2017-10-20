@@ -667,22 +667,40 @@ void MainEmuFrame::Menu_KeyMovie_Stop(wxCommandEvent &event)
 {
 	g_KeyMovie.Stop();
 }
-void MainEmuFrame::Menu_KeyMovie_ConvertP2M(wxCommandEvent &event)
-{
-	wxFileDialog openFileDialog(this, _("Select P2M record file."), L"", L"",
-		L"p2m file(*.p2m)|*.p2m",wxFD_OPEN);
-	if (openFileDialog.ShowModal() == wxID_CANCEL)return;// cancel
-	wxString path = openFileDialog.GetPath();
-	g_KeyMovieData.ConvertP2M(path);
-}
-void MainEmuFrame::Menu_KeyMovie_ConvertOld(wxCommandEvent &event)
+void MainEmuFrame::Menu_KeyMovie_ConvertV2ToV3(wxCommandEvent &event)
 {
 	wxFileDialog openFileDialog(this, _("Select P2M2 record file."), L"", L"",
 		L"p2m file(*.p2m2)|*.p2m2", wxFD_OPEN);
 	if (openFileDialog.ShowModal() == wxID_CANCEL)return;// cancel
 	wxString path = openFileDialog.GetPath();
-	g_KeyMovieData.ConvertOld(path);
+	g_KeyMovieData.ConvertV2ToV3(path);
 }
+void MainEmuFrame::Menu_KeyMovie_ConvertV1_XToV2(wxCommandEvent &event)
+{
+	wxFileDialog openFileDialog(this, _("Select P2M2 record file."), L"", L"",
+		L"p2m file(*.p2m2)|*.p2m2", wxFD_OPEN);
+	if (openFileDialog.ShowModal() == wxID_CANCEL)return;// cancel
+	wxString path = openFileDialog.GetPath();
+	g_KeyMovieData.ConvertV1_XToV2(path);
+}
+void MainEmuFrame::Menu_KeyMovie_ConvertV1ToV2(wxCommandEvent &event)
+{
+	wxFileDialog openFileDialog(this, _("Select P2M2 record file."), L"", L"",
+		L"p2m file(*.p2m2)|*.p2m2", wxFD_OPEN);
+	if (openFileDialog.ShowModal() == wxID_CANCEL)return;// cancel
+	wxString path = openFileDialog.GetPath();
+	g_KeyMovieData.ConvertV1ToV2(path);
+}
+
+void MainEmuFrame::Menu_KeyMovie_ConvertLegacy(wxCommandEvent &event)
+{
+	wxFileDialog openFileDialog(this, _("Select P2M record file."), L"", L"",
+		L"p2m file(*.p2m)|*.p2m",wxFD_OPEN);
+	if (openFileDialog.ShowModal() == wxID_CANCEL)return;// cancel
+	wxString path = openFileDialog.GetPath();
+	g_KeyMovieData.ConvertLegacy(path);
+}
+
 void MainEmuFrame::Menu_KeyMovie_OpenKeyEditor(wxCommandEvent &event)
 {
 	KeyEditor* dlg = wxGetApp().GetKeyEditorPtr();
