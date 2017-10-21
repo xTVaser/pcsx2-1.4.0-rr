@@ -246,8 +246,10 @@ void MainEmuFrame::ConnectMenus()
 	ConnectMenu(MenuId_KeyMovie_Record, Menu_KeyMovie_Record);
 	ConnectMenu(MenuId_KeyMovie_Play, Menu_KeyMovie_Play);
 	ConnectMenu(MenuId_KeyMovie_Stop, Menu_KeyMovie_Stop);
-	ConnectMenu(MenuId_KeyMovie_ConvertP2M, Menu_KeyMovie_ConvertP2M);
-	ConnectMenu(MenuId_KeyMovie_ConvertOld, Menu_KeyMovie_ConvertOld);
+	ConnectMenu(MenuId_KeyMovie_ConvertV2ToV3, Menu_KeyMovie_ConvertV2ToV3);
+	ConnectMenu(MenuId_KeyMovie_ConvertV1_XToV2, Menu_KeyMovie_ConvertV1_XToV2);
+	ConnectMenu(MenuId_KeyMovie_ConvertV1ToV2, Menu_KeyMovie_ConvertV1ToV2);
+	ConnectMenu(MenuId_KeyMovie_ConvertLegacy, Menu_KeyMovie_ConvertLegacy);
 	ConnectMenu(MenuId_KeyMovie_OpenKeyEditor, Menu_KeyMovie_OpenKeyEditor);
 	//-------//
 
@@ -572,10 +574,15 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 	m_MovieSubmenu.Append(MenuId_KeyMovie_Play, _("Play"));
 	m_MovieSubmenu.Append(MenuId_KeyMovie_Stop, _("Stop"));
 	m_MovieSubmenu.AppendSeparator();
-	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertP2M, _("Convert(p2m -> p2m2)"));
-	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertOld, _("Convert(v1.0~v1.2 -> v2.0 later)"));
-	m_MovieSubmenu.AppendSeparator();
 	m_MovieSubmenu.Append(MenuId_KeyMovie_OpenKeyEditor, _("Open KeyEditor Window..."));
+	m_MovieSubmenu.AppendSeparator();
+	// TODO: these should be moved to a non-disabled submenu because you dont need the game running
+	// to convert a movie file (or atleast you shouldnt)
+	// Would also be nice to have the older, non-latest conversion be in its own submenus
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertV2ToV3, _("Convert Movie (v2.0 -> v3.0)"))->Enable(false);
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertV1_XToV2, _("Convert Movie (v1.X -> v2.0)"));
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertV1ToV2, _("Convert Movie (v1.0 -> v2.0)"))->Enable(false);
+	m_MovieSubmenu.Append(MenuId_KeyMovie_ConvertLegacy, _("Convert Legacy Movie (p2m -> p2m2)"));
 	//-------//
 	
 	//--LuaEngine--//

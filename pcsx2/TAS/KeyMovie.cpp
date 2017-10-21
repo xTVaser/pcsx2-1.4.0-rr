@@ -27,51 +27,66 @@ void SaveStateBase::keymovieFreeze()
 }
 
 //----------------------------------
-// key interrupt
+// Main func for handling recording and inputting controller data
+// Called by Sio.cpp::sioWriteController
 //----------------------------------
-void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
+void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & bufCount, u8 buf[])
 {
-	if (port < 0 || 1 < port )return;
-	if (BufCount < 1 || 8 < BufCount)return;
+	// Only examine controllers 1 / 2
+	if (port < 0 || 1 < port )
+		return;
 
 	//==========================
-	// キー入力フレームの確認
-	// BufCount 1 && data == 0x42,
-	// BufCount 2 && buf[2] == 0x5A
-	// の時のみ入力
-	// --- LilyPad.cpp(1192) ---
-	//// READ_DATA_AND_VIBRATE
-	//	case 0x42:
-	//		query.response[2] = 0x5A;
+	// This appears to try to ensure that we are only paying attention
+	// to the frames that matter, the ones that are reading from
+	// the controller.
+	//
+	// See - Lilypad.cpp:1254
+	// 0x42 is the magic number for the default read query
+	//
+	// NOTE: this appears to possibly break if you have logging enabled in LilyPad's config!
 	//==========================
-	if (BufCount == 1) {
+	if (bufCount == 1) {
 		if (data == 0x42)
 		{
 			fInterruptFrame = true;
 		}
 		else {
 			fInterruptFrame = false;
+			return;
 		}
 	}
-	else if ( BufCount == 2 ){
-		if (buf[BufCount] != 0x5A) {
+	else if ( bufCount == 2 ){
+		// See - LilyPad.cpp:1255
+		// 0x5A is always the second byte in the buffer
+		// when the normal READ_DATA_AND_VIBRRATE (0x42) 
+		// query is executed, this looks like a sanity check
+		if (buf[bufCount] != 0x5A) {
 			fInterruptFrame = false;
+			return;
 		}
 	}
-	if (!fInterruptFrame)return;
 
-	int bufIndex = BufCount - 3;
-	if (bufIndex < 0 || 6 < bufIndex)return;
-	if (state == NONE)return;
+	if (!fInterruptFrame)
+		return;
+
+	
+	if (state == NONE)
+		return;
+
+	// We do not want to record or save the first two
+	// bytes in the return from LilyPad
+	if (bufCount < 3)
+		return;
 
 	//---------------
-	// read/write
+	// Read or Write
 	//---------------
-	const u8 &nowBuf = buf[BufCount];
+	const u8 &nowBuf = buf[bufCount];
 	if (state == RECORD)
 	{
 		keyMovieData.updateFrameMax(g_FrameCount);
-		keyMovieData.writeKeyBuf(g_FrameCount, port, bufIndex, nowBuf);
+		keyMovieData.writeKeyBuf(g_FrameCount, port, bufCount - 3, nowBuf);
 	}
 	else if (state == REPLAY)
 	{
@@ -82,8 +97,8 @@ void KeyMovie::ControllerInterrupt(u8 &data, u8 &port, u16 & BufCount, u8 buf[])
 			return;
 		}
 		u8 tmp = 0;
-		if (keyMovieData.readKeyBuf(tmp, g_FrameCount, port, bufIndex)) {
-			buf[BufCount] = tmp;
+		if (keyMovieData.readKeyBuf(tmp, g_FrameCount, port, bufCount - 3)) {
+			buf[bufCount] = tmp;
 		}
 	}
 }

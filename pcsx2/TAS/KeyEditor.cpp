@@ -217,6 +217,7 @@ void KeyEditor::DrawKeyButtonCheck()
 
 //----------------------------------------------
 // event
+// TODO: all of these need to be updated for the key editor window 
 //----------------------------------------------
 
 void KeyEditor::OnBtnUpdate(wxCommandEvent& event)

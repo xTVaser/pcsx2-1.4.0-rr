@@ -210,8 +210,10 @@ protected:
 	void Menu_KeyMovie_Record(wxCommandEvent &event);
 	void Menu_KeyMovie_Stop(wxCommandEvent &event);
 	void Menu_KeyMovie_Play(wxCommandEvent &event);
-	void Menu_KeyMovie_ConvertP2M(wxCommandEvent &event);
-	void Menu_KeyMovie_ConvertOld(wxCommandEvent &event);
+	void Menu_KeyMovie_ConvertV2ToV3(wxCommandEvent &event);
+	void Menu_KeyMovie_ConvertV1_XToV2(wxCommandEvent &event);
+	void Menu_KeyMovie_ConvertV1ToV2(wxCommandEvent &event);
+	void Menu_KeyMovie_ConvertLegacy(wxCommandEvent &event);
 	void Menu_KeyMovie_OpenKeyEditor(wxCommandEvent &event);
 	//-------//
 

@@ -153,6 +153,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>PrecompiledHeader.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>zlib.lib;rpcrt4.lib;lua53.lib;%(AdditionalDependencies)</AdditionalDependencies>
