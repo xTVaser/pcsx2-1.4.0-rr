@@ -18,6 +18,7 @@
 #include "AppForwardDefs.h"
 #include "PathDefs.h"
 #include "CDVD/CDVDaccess.h"
+#include <memory>
 
 enum DocsModeType
 {
@@ -217,8 +218,10 @@ public:
 		wxPoint		WindowPos;
 		bool		IsMaximized;
 		bool		IsFullscreen;
+		bool		EnableVsyncWindowFlag;
 
 		bool		IsToggleFullscreenOnDoubleClick;
+		bool		IsToggleAspectRatioSwitch;
 
 		GSWindowOptions();
 
@@ -253,6 +256,7 @@ public:
 		wxString OutputField;
 		wxString OutputProgressive;
 		wxString OutputInterlaced;
+		wxString Paused;
 		wxString TitleTemplate;
 	};
 
@@ -312,8 +316,11 @@ public:
 	bool		EnablePresets;
 	int			PresetIndex;
 
+	bool		AskOnBoot;
+
 	wxString				CurrentIso;
 	wxString				CurrentELF;
+	wxString				CurrentIRX;
 	CDVD_SourceType			CdvdSource;
 
 	// Memorycard options - first 2 are default slots, last 6 are multitap 1 and 2
@@ -381,4 +388,4 @@ extern void RelocateLogfile();
 extern void AppConfig_OnChangedSettingsFolder( bool overwrite =  false );
 extern wxConfigBase* GetAppConfig();
 
-extern ScopedPtr<AppConfig> g_Conf;
+extern std::unique_ptr<AppConfig> g_Conf;

@@ -80,7 +80,7 @@ class DisassemblyDialog : public wxFrame
 {
 public:
 	DisassemblyDialog( wxWindow* parent=NULL );
-	virtual ~DisassemblyDialog() throw() {}
+	virtual ~DisassemblyDialog() = default;
 
 	static wxString GetNameStatic() { return L"DisassemblyDialog"; }
 	wxString GetDialogName() const { return GetNameStatic(); }
@@ -89,7 +89,7 @@ public:
 	void reset();
 	void setDebugMode(bool debugMode, bool switchPC);
 	
-#ifdef WIN32
+#ifdef _WIN32
 	WXLRESULT MSWWindowProc(WXUINT nMsg, WXWPARAM wParam, WXLPARAM lParam);
 #endif
 

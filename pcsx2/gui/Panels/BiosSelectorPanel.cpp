@@ -22,6 +22,7 @@
 #include <wx/dir.h>
 #include <wx/filepicker.h>
 #include <wx/listbox.h>
+#include <memory>
 
 using namespace pxSizerFlags;
 
@@ -43,12 +44,8 @@ using namespace pxSizerFlags;
 Panels::BaseSelectorPanel::BaseSelectorPanel( wxWindow* parent )
 	: BaseApplicableConfigPanel( parent, wxVERTICAL )
 {
-	Connect( wxEVT_COMMAND_DIRPICKER_CHANGED,	wxFileDirPickerEventHandler	(BaseSelectorPanel::OnFolderChanged) );
-	Connect( wxEVT_SHOW,						wxShowEventHandler			(BaseSelectorPanel::OnShow) );
-}
-
-Panels::BaseSelectorPanel::~BaseSelectorPanel() throw()
-{
+	Bind(wxEVT_DIRPICKER_CHANGED, &BaseSelectorPanel::OnFolderChanged, this);
+	Bind(wxEVT_SHOW, &BaseSelectorPanel::OnShow, this);
 }
 
 void Panels::BaseSelectorPanel::OnShow(wxShowEvent& evt)
@@ -104,9 +101,9 @@ Panels::BiosSelectorPanel::BiosSelectorPanel( wxWindow* parent )
 		_("Select folder with PS2 BIOS roms")		// dir picker popup label
 	);
 
-	m_ComboBox->SetFont( wxFont( m_ComboBox->GetFont().GetPointSize()+1, wxFONTFAMILY_MODERN, wxNORMAL, wxNORMAL, false, L"Lucida Console" ) );
+	m_ComboBox->SetFont( pxGetFixedFont( m_ComboBox->GetFont().GetPointSize()+1 ) );
 	m_ComboBox->SetMinSize( wxSize( wxDefaultCoord, std::max( m_ComboBox->GetMinSize().GetHeight(), 96 ) ) );
-	
+
 	//if (InstallationMode != InstallMode_Portable)
 		m_FolderPicker->SetStaticDesc( _("Click the Browse button to select a different folder where PCSX2 will look for PS2 BIOS roms.") );
 
@@ -118,11 +115,7 @@ Panels::BiosSelectorPanel::BiosSelectorPanel( wxWindow* parent )
 	*this	+= 8;
 	*this	+= m_FolderPicker	| StdExpand();
 
-	Connect( refreshButton->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(BiosSelectorPanel::OnRefreshSelections) );
-}
-
-Panels::BiosSelectorPanel::~BiosSelectorPanel() throw ()
-{
+	Bind(wxEVT_BUTTON, &BiosSelectorPanel::OnRefreshSelections, this, refreshButton->GetId());
 }
 
 void Panels::BiosSelectorPanel::Apply()
@@ -150,17 +143,17 @@ bool Panels::BiosSelectorPanel::ValidateEnumerationStatus()
 {
 	bool validated = true;
 
-	// Impl Note: ScopedPtr used so that resources get cleaned up if an exception
+	// Impl Note: unique_ptr used so that resources get cleaned up if an exception
 	// occurs during file enumeration.
-	ScopedPtr<wxArrayString> bioslist( new wxArrayString() );
+	std::unique_ptr<wxArrayString> bioslist(new wxArrayString());
 
 	if( m_FolderPicker->GetPath().Exists() )
-		wxDir::GetAllFiles( m_FolderPicker->GetPath().ToString(), bioslist, L"*.*", wxDIR_FILES );
+		wxDir::GetAllFiles(m_FolderPicker->GetPath().ToString(), bioslist.get(), L"*.*", wxDIR_FILES);
 
 	if( !m_BiosList || (*bioslist != *m_BiosList) )
 		validated = false;
 
-	m_BiosList.SwapPtr( bioslist );
+	m_BiosList.swap(bioslist);
 
 	return validated;
 }

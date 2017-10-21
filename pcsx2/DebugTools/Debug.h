@@ -44,7 +44,6 @@ namespace R3000A
 	extern void (*IOP_DEBUG_BSC[64])(char *buf);
 
 	extern const char * const disRNameGPR[];
-	extern char* disR3000Fasm(u32 code, u32 pc);
 	extern char* disR3000AF(u32 code, u32 pc);
 }
 
@@ -229,15 +228,19 @@ public:
 	{
 		ConsoleColorScope cs(conColor);
 		Console.WriteRaw( msg );
+
+		// Buffered output isn't compatible with the testsuite. The end of test
+		// doesn't always get flushed. Let's just flush all the output if EE/IOP
+		// print anything.
+		fflush(NULL);
+
 		return false;
 	}
 
-#if wxMAJOR_VERSION >= 3
 	bool Write( const wxString msg ) const
 	{
 		return Write(msg.wc_str());
 	}
-#endif
 
 };
 
@@ -300,6 +303,7 @@ struct SysTraceLogPack
 		SysTraceLog_IOP_Events		DMAC;
 		SysTraceLog_IOP_Events		Counters;
 		SysTraceLog_IOP_Events		CDVD;
+		SysTraceLog_IOP_Events		MDEC;
 
 		IOP_PACK();
 	} IOP;
@@ -333,6 +337,14 @@ extern void __Log( const char* fmt, ... );
 #	define SysTraceActive(trace)	SysTrace.trace.IsActive()
 #else
 #	define SysTraceActive(trace)	(false)
+#endif
+
+#ifdef __WXMAC__
+    // Not available on OSX, apparently always double buffered window.
+#   define                          SetDoubleBuffered(x)
+
+    // TODO OSX OsxKeyCodes.cpp pending
+#   define NewPipeRedir(x)          NULL
 #endif
 
 #define macTrace(trace)	SysTraceActive(trace) && SysTrace.trace.Write
@@ -369,6 +381,7 @@ extern void __Log( const char* fmt, ... );
 #define PAD_LOG			macTrace(IOP.PAD)
 #define GPU_LOG			macTrace(IOP.GPU)
 #define CDVD_LOG		macTrace(IOP.CDVD)
+#define MDEC_LOG		macTrace(IOP.MDEC)
 
 
 #define ELF_LOG			SysConsole.ELF.IsActive()		&& SysConsole.ELF.Write

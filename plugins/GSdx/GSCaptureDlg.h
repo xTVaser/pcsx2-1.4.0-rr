@@ -31,11 +31,11 @@ class GSCaptureDlg : public GSDialog
 	{
 		CComPtr<IMoniker> moniker;
 		CComPtr<IBaseFilter> filter;
-		wstring FriendlyName;
+		std::wstring FriendlyName;
 		_bstr_t DisplayName;
 	};
 
-	list<Codec> m_codecs;
+	std::list<Codec> m_codecs;
 
 	int GetSelCodec(Codec& c);
 
@@ -48,7 +48,7 @@ public:
 
 	int m_width;
 	int m_height;
-	string m_filename;
-	int m_colorspace;
+	std::string m_filename;
+	INT_PTR m_colorspace;
 	CComPtr<IBaseFilter> m_enc;
 };

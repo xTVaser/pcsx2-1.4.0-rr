@@ -34,7 +34,7 @@ OutputIsoFile::OutputIsoFile()
 	_init();
 }
 
-OutputIsoFile::~OutputIsoFile() throw()
+OutputIsoFile::~OutputIsoFile()
 {
 	Close();
 }
@@ -62,7 +62,7 @@ void OutputIsoFile::Create(const wxString& filename, int version)
 	m_blockofs	= 24;
 	m_blocksize	= 2048;
 
-	m_outstream = new wxFileOutputStream( m_filename );
+	m_outstream = std::make_unique<wxFileOutputStream>(m_filename);
 	pxStream_OpenCheck( *m_outstream, m_filename, L"writing" );
 
 	Console.WriteLn("isoFile create ok: %s ", WX_STR(m_filename));
@@ -114,7 +114,7 @@ void OutputIsoFile::WriteSector(const u8* src, uint lsn)
 
 void OutputIsoFile::Close()
 {
-	m_dtable.Delete();
+	m_dtable.reset(nullptr);
 
 	_init();
 }

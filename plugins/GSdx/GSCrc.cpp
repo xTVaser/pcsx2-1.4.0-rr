@@ -26,6 +26,10 @@
 CRC::Game CRC::m_games[] =
 {
 	{0x00000000, NoTitle, NoRegion, 0},
+	{0xF46142D3, ArTonelico2, NoRegion, 0},
+	{0xC38067F4, ArTonelico2, NoRegion, 0}, // project metafalica 1.0
+	{0xF95F37EE, ArTonelico2, US, 0},
+	{0xCE2C1DBF, ArTonelico2, EU, 0},
 	{0x2113EA2E, MetalSlug6, JP, 0},
 	{0x42E05BAF, TomoyoAfter, JP, PointListPalette},
 	{0x7800DC84, Clannad, JP, PointListPalette},
@@ -133,6 +137,7 @@ CRC::Game CRC::m_games[] =
 	{0x29C28734, ICO, CH, 0},
 	{0xAEAD1CA3, GT4, JP, 0},
 	{0x30E41D93, GT4, KO, 0},
+	{0x715CF2EC, GT4, EU, 0},
 	{0x44A61C8F, GT4, EU, 0},
 	{0x0086E35B, GT4, EU, 0},
 	{0x77E61C8A, GT4, US, 0},
@@ -142,6 +147,7 @@ CRC::Game CRC::m_games[] =
 	{0xAD66643C, GT3, CH, 0}, // cutie comment
 	{0x6810C3BC, GT3, CH, 0}, //GRAN TURISMO Concept 2002 Tokyo-Geneva
 	{0x85AE91B3, GT3, US, 0},
+	{0x8AA991B0, GT3, US, 0},
 	{0xC220951A, GT3, JP, 0},
 	{0x9DE5CF65, GT3, JP, 0}, //Gran Turismo 3: A-spec
 	{0x60013EBD, GTConcept, EU, 0},
@@ -223,6 +229,7 @@ CRC::Game CRC::m_games[] =
 	{0xFB236A46, SonicUnleashed, US, 0},
 	{0x8C913264, SonicUnleashed, EU, 0},
 	{0x5C1EBD61, SimpsonsGame, EU, 0},
+	{0x5C1EBF61, SimpsonsGame, FR, 0},
 	{0x4C7BB3C8, SimpsonsGame, NoRegion, 0},
 	{0x4C94B32C, SimpsonsGame, NoRegion, 0},
 	{0x565B7E04, SimpsonsGame, IT, 0},
@@ -305,8 +312,6 @@ CRC::Game CRC::m_games[] =
 	{0x37CD4279, LordOfTheRingsThirdAge, KO, 0},
 	{0xE169BAF8, RedDeadRevolver, US, 0},
 	{0xE2E67E23, RedDeadRevolver, EU, 0},
-	{0xEDDD6573, SpidermanWoS, US, 0},	//Web of Shadows
-	{0xF14C1D82, SpidermanWoS, EU, 0},
 	{0xF56C7948, HeavyMetalThunder, JP, 0},
 	{0x2498951B, SilentHill3, US, 0},
 	{0x5088CCDB, SilentHill3, EU, 0},
@@ -328,7 +333,6 @@ CRC::Game CRC::m_games[] =
 	{0x306CDADA, CastlevaniaLoI, EU, 0},
 	{0xA36CFF6C, CastlevaniaLoI, JP, 0},
 	{0x9A93FE5D, CastlevaniaLoI, KO, 0},
-	{0xA79B0491, NanoBreaker, JP, 0},
 	{0x7985D894, FinalFightStreetwise, US, 0}, 
 	{0xED4BF0D3, FinalFightStreetwise, US, 0}, // cutie comment
 	{0x73C560BA, FinalFightStreetwise, EU, 0},
@@ -354,6 +358,7 @@ CRC::Game CRC::m_games[] =
 	{0xF21EE6E0, CrashNburn, US, 0},
 	{0x694A998E, TombRaiderUnderworld, JP, 0}, // cutie comment
 	{0x8E214549, TombRaiderUnderworld, EU, 0},
+	{0x618769D6, TombRaiderUnderworld, US, 0},
 	{0xB639EB17, TombRaiderAnniversary, US, 0},
 	{0xB05805B6, TombRaiderAnniversary, JP, 0}, // cutie comment
 	{0xA629A376, TombRaiderAnniversary, EU, 0},
@@ -367,17 +372,6 @@ CRC::Game CRC::m_games[] =
 	{0xB3A9F9ED, Black, JP, 0},
 	{0x7838882F, VF4, JP, 0},
 	{0xEA131B57, VF4, US, 0},
-	{0x4F755D39, TyTasmanianTiger, US, 0},
-	{0xD59D3252, TyTasmanianTiger, EU, 0},
-	{0x5A1BB2A1, TyTasmanianTiger2, US, 0},
-	{0x44A5FA15, FFVIIDoC, US, 0},
-	{0x33F7D21A, FFVIIDoC, EU, 0},
-	{0xAFAC88EF, FFVIIDoC, JP, 0},
-	{0x568A5C78, DigimonRumbleArena2, US, 0},
-	{0x785E22BB, DigimonRumbleArena2, EU, 0},
-	{0x4C5CE4C3, DigimonRumbleArena2, EU, 0},
-	{0x7F995E8D, DigimonRumbleArena2, JP, 0},
-	{0x115A184D, DigimonRumbleArena2, KO, 0},
 	{0x879CDA5E, StarWarsForceUnleashed, US, 0},
 	{0x137C792E, StarWarsForceUnleashed, US, 0},
 	{0x503BF9E1, StarWarsBattlefront, NoRegion, 0},  // EU and US versions have the same CRC
@@ -400,12 +394,10 @@ CRC::Game CRC::m_games[] =
 	{0xEEA60511, BurnoutRevenge, KO, 0},
 	{0x8C9576A1, BurnoutDominator, US, 0},
 	{0x8C9576B4, BurnoutDominator, EU, 0},
+	{0x8C9C76B4, BurnoutDominator, EU, 0},
 	{0x4A0E5B3A, MidnightClub3, US, 0},	//dub
 	{0xEBE1972D, MidnightClub3, EU, 0},	//dub
 	{0x60A42FF5, MidnightClub3, US, 0},	//remix
-	{0x4B1A0FFA, XmenOriginsWolverine, US, 0},
-	{0xBFF3DBCB, CallofDutyFinalFronts, US, 0},
-	{0xB78A5F5A, CallofDutyFinalFronts, EU, 0},
 	{0xD03D4C77, SpyroNewBeginning, US, 0},
 	{0x0EE5646B, SpyroNewBeginning, EU, 0},
 	// {0x7ACF7E03, SpyroNewBeginning, NoRegion, 0}, // same CRC as {ICO, NoRegion}
@@ -416,6 +408,7 @@ CRC::Game CRC::m_games[] =
 	{0x43AB7214, TalesOfLegendia, US, 0},
 	{0x1F8640E0, TalesOfLegendia, JP, 0},
 	{0xE4F5DA2B, TalesOfLegendia, KO, 0},
+	{0xA79B0491, NanoBreaker, JP, 0},
 	{0x98C7B76D, NanoBreaker, US, 0},
 	{0x7098BE76, NanoBreaker, KO, 0},
 	{0x9B89F425, NanoBreaker, EU, 0},
@@ -469,11 +462,14 @@ CRC::Game CRC::m_games[] =
 	{0xFF9C0E93, TouristTrophy, US, 0},
 	{0xCA9AA903, TouristTrophy, EU, 0}, //crc hack not fully working on PAL, still needs brightness =0
 	{0xA1B3F232, GTASanAndreas, EU, 0}, // cutie comment
+	{0xB440A8FE, GTASanAndreas, EU, 0},
 	{0x399A49CA, GTASanAndreas, US, 0}, 
+	{0x2C6BE434, GTASanAndreas, US, 0},
 	{0x60FE139C, GTASanAndreas, JP, 0}, 
 	{0x2615F542, FrontMission5, JP, 0}, 
 	{0xF60255AC, FrontMission5, JP, 0},
 	{0xCB783836, FrontMission5, JP, 0},
+	{0xB7532DF6, FrontMission5, JP, 0},
 	{0xAEDAEE99, GodHand, JP, 0}, 
 	{0x6FB69282, GodHand, US, 0},
 	{0x924C4AA6, GodHand, KO, 0},
@@ -482,8 +478,6 @@ CRC::Game CRC::m_games[] =
 	{0xF7F181C3, DeathByDegreesTekkenNinaWilliams, CH, 0}, // cutie comment
 	{0xF088FA5B, DeathByDegreesTekkenNinaWilliams, KO, 0},
 	{0x59683BB0, DeathByDegreesTekkenNinaWilliams, EU, 0},
-	{0x771C3B47, AlpineRacer3, JP, 0}, // cutie comment
-	{0x7367D841, AlpineRacer3, EU, 0},
 	{0x449E1F6B, HummerBadlands, US, 0}, 
 	{0xAEA1B3AD, SengokuBasara, JP, 0},
 	{0x5B659BED, Grandia3, JP, 0},
@@ -510,11 +504,21 @@ CRC::Game CRC::m_games[] =
 	{0xFEFCF9DE, SteambotChronicles, JP, 0}, // Ponkotsu Roman Daikatsugeki: Bumpy Trot 
 	{0XE1BF5DCA, SuperManReturns, US, 0},
 	{0x06A7506A, SacredBlaze, JP, 0},
+	{0x4CE7FB04, ItadakiStreet, JP, 0},
+	{0x9C712FF0, Jak1, EU, 0},
+	{0x472E7699, Jak1, US, 0},
+	{0x2479F4A9, Jak2, EU, 0},
+	{0x9184AAF1, Jak2, US, 0},
+	{0x12804727, Jak3, EU, 0},
+	{0x644CFD03, Jak3, US, 0},
+	{0xDF659E77, JakX, EU, 0},
+	{0x3091E6FB, JakX, US, 0},
+	{0x4653CA3E, HarleyDavidson, NoRegion, 0},
 };
 
-hash_map<uint32, CRC::Game*> CRC::m_map;
+std::map<uint32, CRC::Game*> CRC::m_map;
 
-string ToLower( string str )
+std::string ToLower( std::string str )
 {
 	transform( str.begin(), str.end(), str.begin(), ::tolower);
 	return str;
@@ -524,18 +528,19 @@ string ToLower( string str )
 // The list is case insensitive and order insensitive.
 // E.g. Disable all CRC hacks:          CrcHacksExclusions=all
 // E.g. Disable hacks for these CRCs:   CrcHacksExclusions=0x0F0C4A9C, 0x0EE5646B, 0x7ACF7E03
-bool IsCrcExcluded(string exclusionList, uint32 crc)
+bool IsCrcExcluded(std::string exclusionList, uint32 crc)
 {
-	string target = format( "0x%08x", crc );
-	exclusionList = ToLower( exclusionList );
-	return ( exclusionList.find( target ) != string::npos || exclusionList.find( "all" ) != string::npos );
+	std::string target = format("0x%08x", crc);
+	exclusionList = ToLower(exclusionList);
+	return exclusionList.find(target) != std::string::npos || exclusionList.find("all") != std::string::npos;
 }
 
 CRC::Game CRC::Lookup(uint32 crc)
 {
+	printf("GSdx Lookup CRC:%X\n", crc);
 	if(m_map.empty())
 	{
-		string exclusions = theApp.GetConfig( "CrcHacksExclusions", "" );
+		std::string exclusions = theApp.GetConfigS("CrcHacksExclusions");
 		if (exclusions.length() != 0)
 			printf( "GSdx: CrcHacksExclusions: %s\n", exclusions.c_str() );
 
@@ -548,7 +553,7 @@ CRC::Game CRC::Lookup(uint32 crc)
 						, m_games[i].crc, m_games[i].title, m_games[i].region, m_map[m_games[i].crc]->title, m_map[m_games[i].crc]->region);
 					crcDups++;
 				}
-				
+
 				m_map[m_games[i].crc] = &m_games[i];
 			}
 			//else
@@ -558,7 +563,7 @@ CRC::Game CRC::Lookup(uint32 crc)
 			printf("[FIXME] GSdx: Duplicate CRC: Overall: %d\n", crcDups);
 	}
 
-	hash_map<uint32, Game*>::iterator i = m_map.find(crc);
+	auto i = m_map.find(crc);
 
 	if(i != m_map.end())
 	{

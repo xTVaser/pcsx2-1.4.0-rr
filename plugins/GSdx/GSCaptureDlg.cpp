@@ -26,9 +26,9 @@
 GSCaptureDlg::GSCaptureDlg()
 	: GSDialog(IDD_CAPTURE)
 {
-	m_width = theApp.GetConfig("CaptureWidth", 640);
-	m_height = theApp.GetConfig("CaptureHeight", 480);
-	m_filename = theApp.GetConfig("CaptureFileName", "");
+	m_width = theApp.GetConfigI("CaptureWidth");
+	m_height = theApp.GetConfigI("CaptureHeight");
+	m_filename = theApp.GetConfigS("CaptureFileName");
 }
 
 int GSCaptureDlg::GetSelCodec(Codec& c)
@@ -64,7 +64,7 @@ void GSCaptureDlg::OnInit()
 
 	m_codecs.clear();
 
-	_bstr_t selected = theApp.GetConfig("CaptureVideoCodecDisplayName", "").c_str();
+	_bstr_t selected = theApp.GetConfigS("CaptureVideoCodecDisplayName").c_str();
 
 	ComboBoxAppend(IDC_CODECS, "Uncompressed", 0, true);
 
@@ -79,7 +79,7 @@ void GSCaptureDlg::OnInit()
 
 		c.moniker = moniker;
 
-		wstring prefix;
+		std::wstring prefix;
 
 		LPOLESTR str = NULL;
 
@@ -108,7 +108,7 @@ void GSCaptureDlg::OnInit()
 
 		m_codecs.push_back(c);
 
-		string s(c.FriendlyName.begin(), c.FriendlyName.end());
+		std::string s{c.FriendlyName.begin(), c.FriendlyName.end()};
 
 		ComboBoxAppend(IDC_CODECS, s.c_str(), (LPARAM)&m_codecs.back(), c.DisplayName == selected);
 	}
@@ -181,7 +181,7 @@ bool GSCaptureDlg::OnCommand(HWND hWnd, UINT id, UINT code)
 		m_width = GetTextAsInt(IDC_WIDTH);
 		m_height = GetTextAsInt(IDC_HEIGHT);
 		m_filename = GetText(IDC_FILENAME);
-		ComboBoxGetSelData(IDC_COLORSPACE, (INT_PTR)m_colorspace);
+		ComboBoxGetSelData(IDC_COLORSPACE, m_colorspace);
 
 		Codec c;
 

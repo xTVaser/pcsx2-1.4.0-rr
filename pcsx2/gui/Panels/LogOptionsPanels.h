@@ -17,6 +17,7 @@
 
 #include "AppCommon.h"
 #include "ApplyState.h"
+#include <memory>
 
 namespace Panels
 {
@@ -44,7 +45,7 @@ namespace Panels
 
 	public:
 		eeLogOptionsPanel( LogOptionsPanel* parent );
-		virtual ~eeLogOptionsPanel() throw() {}
+		virtual ~eeLogOptionsPanel() = default;
 
 		CheckedStaticBox* GetStaticBox( const wxString& subgroup ) const;
 
@@ -62,7 +63,7 @@ namespace Panels
 
 	public:
 		iopLogOptionsPanel( LogOptionsPanel* parent );
-		virtual ~iopLogOptionsPanel() throw() {}
+		virtual ~iopLogOptionsPanel() = default;
 
 		CheckedStaticBox* GetStaticBox( const wxString& subgroup ) const;
 
@@ -79,11 +80,11 @@ namespace Panels
 
 		pxCheckBox*			m_masterEnabler;
 
-		ScopedArray<pxCheckBox*> m_checks;
+		std::unique_ptr<pxCheckBox*[]> m_checks;
 
 	public:
 		LogOptionsPanel( wxWindow* parent );
-		virtual ~LogOptionsPanel() throw() {}
+		virtual ~LogOptionsPanel() = default;
 
 		void AppStatusEvent_OnSettingsApplied();
 		void OnUpdateEnableAll();

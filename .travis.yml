@@ -1,23 +1,35 @@
 language: cpp
 
 sudo: required
-dist: trusty
+
+cache: ccache
 
 matrix:
   include:
-# Version 5 seems to be whatever is latest - for now it's 5.2
-    - env: VERSION=5
+    - env: VERSION=7 BITS=64
       compiler: gcc
       os: linux
-    - env: VERSION=4.9
+    - env: VERSION=7 BITS=32
       compiler: gcc
       os: linux
-    - env: VERSION=3.7
+    - env: VERSION=6 BITS=32
+      compiler: gcc
+      os: linux
+    - env: VERSION=4.9 BITS=32
+      compiler: gcc
+      os: linux
+    - env: VERSION=3.8 BITS=32
       compiler: clang
       os: linux
 
 before_install:
   - ./travis.sh before_install
 
+before_script:
+  - ./travis.sh before_script
+
 script:
   - ./travis.sh script
+
+after_success:
+  - ./travis.sh after_success

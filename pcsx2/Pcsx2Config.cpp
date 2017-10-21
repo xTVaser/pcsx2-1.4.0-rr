@@ -20,6 +20,7 @@
 #include "Utilities/IniInterface.h"
 #include "Config.h"
 #include "GS.h"
+#include "gui/GSFrame.h"
 
 void TraceLogFilters::LoadSave( IniInterface& ini )
 {
@@ -200,13 +201,12 @@ Pcsx2Config::GSOptions::GSOptions()
 {
 	FrameLimitEnable		= true;
 	FrameSkipEnable			= false;
-	VsyncEnable				= false;
+	VsyncEnable				= VsyncMode::Off;
 
 	SynchronousMTGS			= false;
 	DisableOutput			= false;
 	VsyncQueueSize			= 2;
 
-	DefaultRegionMode		= Region_NTSC;
 	FramesToDraw			= 2;
 	FramesToSkip			= 2;
 
@@ -225,18 +225,30 @@ void Pcsx2Config::GSOptions::LoadSave( IniInterface& ini )
 
 	IniEntry( FrameLimitEnable );
 	IniEntry( FrameSkipEnable );
-	IniEntry( VsyncEnable );
+	ini.EnumEntry( L"VsyncEnable", VsyncEnable, NULL, VsyncEnable );
 
 	IniEntry( LimitScalar );
 	IniEntry( FramerateNTSC );
 	IniEntry( FrameratePAL );
 
-	// WARNING: array must be NULL terminated to compute it size
-	static const wxChar * const ntsc_pal_str[3] =  { L"ntsc", L"pal", NULL };
-	ini.EnumEntry( L"DefaultRegionMode", DefaultRegionMode, ntsc_pal_str, DefaultRegionMode );
-
 	IniEntry( FramesToDraw );
 	IniEntry( FramesToSkip );
+}
+
+int Pcsx2Config::GSOptions::GetVsync() const
+{
+	if (g_LimiterMode == Limit_Turbo || !FrameLimitEnable)
+		return 0;
+
+	// D3D only support a boolean state. OpenGL waits a number of vsync
+	// interrupt (negative value for late vsync).
+	switch (VsyncEnable) {
+		case VsyncMode::Adaptive: return -1;
+		case VsyncMode::Off: return 0;
+		case VsyncMode::On: return 1;
+
+		default: return 0;
+	}
 }
 
 const wxChar *const tbl_GamefixNames[] =
@@ -254,9 +266,10 @@ const wxChar *const tbl_GamefixNames[] =
 	L"DMABusy",
 	L"VIFFIFO",
 	L"VIF1Stall",
-	L"GIFReverse",
+	L"GIFFIFO",
 	L"FMVinSoftware",
 	L"GoemonTlb",
+	L"ScarfaceIbit"
 };
 
 const __fi wxChar* EnumToString( GamefixId id )
@@ -316,10 +329,10 @@ void Pcsx2Config::GamefixOptions::Set( GamefixId id, bool enabled )
 		case Fix_DMABusy:		DMABusyHack			= enabled;  break;
 		case Fix_VIFFIFO:		VIFFIFOHack			= enabled;  break;
 		case Fix_VIF1Stall:		VIF1StallHack		= enabled;  break;
-		case Fix_GIFReverse:	GIFReverseHack		= enabled;  break;
+		case Fix_GIFFIFO:		GIFFIFOHack			= enabled;  break;
 		case Fix_FMVinSoftware:	FMVinSoftwareHack	= enabled;  break;
 		case Fix_GoemonTlbMiss: GoemonTlbHack		= enabled;  break;
-
+		case Fix_ScarfaceIbit:  ScarfaceIbit        = enabled;  break;
 		jNO_DEFAULT;
 	}
 }
@@ -342,10 +355,10 @@ bool Pcsx2Config::GamefixOptions::Get( GamefixId id ) const
 		case Fix_DMABusy:		return DMABusyHack;
 		case Fix_VIFFIFO:		return VIFFIFOHack;
 		case Fix_VIF1Stall:		return VIF1StallHack;
-		case Fix_GIFReverse:	return GIFReverseHack;
+		case Fix_GIFFIFO:		return GIFFIFOHack;
 		case Fix_FMVinSoftware:	return FMVinSoftwareHack;
 		case Fix_GoemonTlbMiss: return GoemonTlbHack;
-		
+		case Fix_ScarfaceIbit:  return ScarfaceIbit;
 		jNO_DEFAULT;
 	}
 	return false;		// unreachable, but we still need to suppress warnings >_<
@@ -368,19 +381,22 @@ void Pcsx2Config::GamefixOptions::LoadSave( IniInterface& ini )
 	IniBitBool( DMABusyHack );
 	IniBitBool( VIFFIFOHack );
 	IniBitBool( VIF1StallHack );
-	IniBitBool( GIFReverseHack );
+	IniBitBool( GIFFIFOHack );
 	IniBitBool( FMVinSoftwareHack );
 	IniBitBool( GoemonTlbHack );
+	IniBitBool( ScarfaceIbit );
 }
 
 
 Pcsx2Config::DebugOptions::DebugOptions()
 {
 	ShowDebuggerOnStart = false;
+	AlignMemoryWindowStart = true;
 	FontWidth = 8;
 	FontHeight = 12;
 	WindowWidth = 0;
 	WindowHeight = 0;
+	MemoryViewBytesPerRow = 16;
 }
 
 void Pcsx2Config::DebugOptions::LoadSave( IniInterface& ini )
@@ -388,10 +404,12 @@ void Pcsx2Config::DebugOptions::LoadSave( IniInterface& ini )
 	ScopedIniGroup path( ini, L"Debugger" );
 
 	IniBitBool( ShowDebuggerOnStart );
-	IniBitfield(FontWidth);
-	IniBitfield(FontHeight);
-	IniBitfield(WindowWidth);
-	IniBitfield(WindowHeight);
+	IniBitBool( AlignMemoryWindowStart );
+	IniBitfield( FontWidth );
+	IniBitfield( FontHeight );
+	IniBitfield( WindowWidth );
+	IniBitfield( WindowHeight );
+	IniBitfield( MemoryViewBytesPerRow );
 }
 
 

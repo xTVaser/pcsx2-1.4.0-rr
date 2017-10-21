@@ -23,62 +23,124 @@
 #include "GSShaderOGL.h"
 #include "GLState.h"
 
+#ifdef _WIN32
+#include "resource.h"
+#else
+#include "GSdxResources.h"
+#endif
+
 GSShaderOGL::GSShaderOGL(bool debug) :
 	m_pipeline(0),
 	m_debug_shader(debug)
 {
-	m_single_prog.clear();
-	if (GLLoader::found_GL_ARB_separate_shader_objects) {
-		glGenProgramPipelines(1, &m_pipeline);
-		glBindProgramPipeline(m_pipeline);
-	}
+	theApp.LoadResource(IDR_COMMON_GLSL, m_common_header);
+
+	// Create a default pipeline
+	m_pipeline = LinkPipeline("HW pipe", 0, 0, 0);
+	BindPipeline(m_pipeline);
 }
 
 GSShaderOGL::~GSShaderOGL()
 {
-	if (GLLoader::found_GL_ARB_separate_shader_objects)
-		glDeleteProgramPipelines(1, &m_pipeline);
+	printf("Delete %zu Shaders, %zu Programs, %zu Pipelines\n",
+			m_shad_to_delete.size(), m_prog_to_delete.size(), m_pipe_to_delete.size());
 
-	for (auto it = m_single_prog.begin(); it != m_single_prog.end() ; it++) glDeleteProgram(it->second);
-	m_single_prog.clear();
+	for (auto s : m_shad_to_delete) glDeleteShader(s);
+	for (auto p : m_prog_to_delete) glDeleteProgram(p);
+	glDeleteProgramPipelines(m_pipe_to_delete.size(), &m_pipe_to_delete[0]);
 }
 
-void GSShaderOGL::VS(GLuint s)
+GLuint GSShaderOGL::LinkPipeline(const std::string& pretty_print, GLuint vs, GLuint gs, GLuint ps)
 {
-	if (GLState::vs != s)
-	{
-		GLState::vs = s;
-		GLState::dirty_prog = true;
-		if (GLLoader::found_GL_ARB_separate_shader_objects)
-			glUseProgramStages(m_pipeline, GL_VERTEX_SHADER_BIT, s);
+	GLuint p;
+	glCreateProgramPipelines(1, &p);
+	glUseProgramStages(p, GL_VERTEX_SHADER_BIT, vs);
+	glUseProgramStages(p, GL_GEOMETRY_SHADER_BIT, gs);
+	glUseProgramStages(p, GL_FRAGMENT_SHADER_BIT, ps);
+
+	glObjectLabel(GL_PROGRAM_PIPELINE, p, pretty_print.size(), pretty_print.c_str());
+
+	m_pipe_to_delete.push_back(p);
+
+	return p;
+}
+
+GLuint GSShaderOGL::LinkProgram(GLuint vs, GLuint gs, GLuint ps)
+{
+	uint32 hash = ((vs ^ gs) << 24) ^ ps;
+	auto it = m_program.find(hash);
+	if (it != m_program.end())
+		return it->second;
+
+	GLuint p = glCreateProgram();
+	if (vs) glAttachShader(p, vs);
+	if (ps) glAttachShader(p, ps);
+	if (gs) glAttachShader(p, gs);
+
+	glLinkProgram(p);
+
+	ValidateProgram(p);
+
+	m_prog_to_delete.push_back(p);
+	m_program[hash] = p;
+
+	return p;
+}
+
+void GSShaderOGL::BindProgram(GLuint vs, GLuint gs, GLuint ps)
+{
+	GLuint p = LinkProgram(vs, gs, ps);
+
+	if (GLState::program != p) {
+		GLState::program = p;
+		glUseProgram(p);
 	}
 }
 
-void GSShaderOGL::PS(GLuint s)
+void GSShaderOGL::BindProgram(GLuint p)
 {
+	if (GLState::program != p) {
+		GLState::program = p;
+		glUseProgram(p);
+	}
+}
+
+void GSShaderOGL::BindPipeline(GLuint vs, GLuint gs, GLuint ps)
+{
+	BindPipeline(m_pipeline);
+
+	if (GLState::vs != vs) {
+		GLState::vs = vs;
+		glUseProgramStages(m_pipeline, GL_VERTEX_SHADER_BIT, vs);
+	}
+
+	if (GLState::gs != gs) {
+		GLState::gs = gs;
+		glUseProgramStages(m_pipeline, GL_GEOMETRY_SHADER_BIT, gs);
+	}
+
 #ifdef _DEBUG
+	// In debug always sets the program. It allow to replace the program in apitrace easily.
 	if (true)
 #else
-	if (GLState::ps != s)
+	if (GLState::ps != ps)
 #endif
 	{
-		// In debug always sets the program. It allow to replace the program in apitrace easily.
-		GLState::ps = s;
-		GLState::dirty_prog = true;
-		if (GLLoader::found_GL_ARB_separate_shader_objects) {
-			glUseProgramStages(m_pipeline, GL_FRAGMENT_SHADER_BIT, s);
-		}
+		GLState::ps = ps;
+		glUseProgramStages(m_pipeline, GL_FRAGMENT_SHADER_BIT, ps);
 	}
 }
 
-void GSShaderOGL::GS(GLuint s)
+void GSShaderOGL::BindPipeline(GLuint pipe)
 {
-	if (GLState::gs != s)
-	{
-		GLState::gs = s;
-		GLState::dirty_prog = true;
-		if (GLLoader::found_GL_ARB_separate_shader_objects)
-			glUseProgramStages(m_pipeline, GL_GEOMETRY_SHADER_BIT, s);
+	if (GLState::pipeline != pipe) {
+		GLState::pipeline = pipe;
+		glBindProgramPipeline(pipe);
+	}
+
+	if (GLState::program) {
+		GLState::program = 0;
+		glUseProgram(0);
 	}
 }
 
@@ -148,71 +210,22 @@ bool GSShaderOGL::ValidatePipeline(GLuint p)
 	return false;
 }
 
-GLuint GSShaderOGL::LinkNewProgram()
-{
-	GLuint p = glCreateProgram();
-	if (GLState::vs) glAttachShader(p, GLState::vs);
-	if (GLState::ps) glAttachShader(p, GLState::ps);
-	if (GLState::gs) glAttachShader(p, GLState::gs);
-
-	glLinkProgram(p);
-
-	ValidateProgram(p);
-
-	return p;
-}
-
-void GSShaderOGL::UseProgram()
-{
-	if (GLState::dirty_prog) {
-		if (!GLLoader::found_GL_ARB_separate_shader_objects) {
-			hash_map<uint64, GLuint >::iterator it;
-			// Note: shader are integer lookup pointer. They start from 1 and incr
-			// every time you create a new shader OR a new program.
-			// Note2: vs & gs are precompiled at startup. FGLRX and radeon got value < 128. GS has only 2 programs
-			// We migth be able to pack the value in a 32bits int
-			// I would need to check the behavior on Nvidia (pause/resume).
-			uint64 sel = (uint64)GLState::vs << 40 | (uint64)GLState::gs << 20 | GLState::ps;
-			it = m_single_prog.find(sel);
-			if (it == m_single_prog.end()) {
-				GLState::program = LinkNewProgram();
-				m_single_prog[sel] = GLState::program;
-
-				ValidateProgram(GLState::program);
-
-				glUseProgram(GLState::program);
-			} else {
-				GLuint prog = it->second;
-				if (prog != GLState::program) {
-					GLState::program = prog;
-					glUseProgram(GLState::program);
-				}
-			}
-		}
-	}
-
-	GLState::dirty_prog = false;
-}
-
 std::string GSShaderOGL::GenGlslHeader(const std::string& entry, GLenum type, const std::string& macro)
 {
 	std::string header;
 	header = "#version 330 core\n";
 	// Need GL version 420
 	header += "#extension GL_ARB_shading_language_420pack: require\n";
-	if (GLLoader::found_GL_ARB_separate_shader_objects) {
-		// Need GL version 410
-		header += "#extension GL_ARB_separate_shader_objects: require\n";
-	}
+	// Need GL version 410
+	header += "#extension GL_ARB_separate_shader_objects: require\n";
 	if (GLLoader::found_GL_ARB_shader_image_load_store) {
 		// Need GL version 420
 		header += "#extension GL_ARB_shader_image_load_store: require\n";
 	} else {
 		header += "#define DISABLE_GL42_image\n";
 	}
-	if (GLLoader::found_GL_ARB_clip_control) {
-		header += "#define ZERO_TO_ONE_DEPTH\n";
-	}
+	if (GLLoader::vendor_id_amd || GLLoader::vendor_id_intel)
+		header += "#define BROKEN_DRIVER as_usual\n";
 
 	// Stupid GL implementation (can't use GL_ES)
 	// AMD/nvidia define it to 0
@@ -248,37 +261,20 @@ GLuint GSShaderOGL::Compile(const std::string& glsl_file, const std::string& ent
 
 	GLuint program = 0;
 
-	if (type == GL_GEOMETRY_SHADER && !GLLoader::found_geometry_shader) {
-		return program;
-	}
-
 	// Note it is better to separate header and source file to have the good line number
 	// in the glsl compiler report
-	const char* sources[2];
+	const int shader_nb = 3;
+	const char* sources[shader_nb];
 
 	std::string header = GenGlslHeader(entry, type, macro_sel);
-	int shader_nb = 1;
-#if 1
+
 	sources[0] = header.c_str();
-	sources[1] = glsl_h_code;
-	shader_nb++;
-#else
-	sources[0] = header.append(glsl_h_code).c_str();
-#endif
+	sources[1] = m_common_header.data();
+	sources[2] = glsl_h_code;
 
-	if (GLLoader::found_GL_ARB_separate_shader_objects) {
-		program = glCreateShaderProgramv(type, shader_nb, sources);
-	} else {
-		program = glCreateShader(type);
-		glShaderSource(program, shader_nb, sources, NULL);
-		glCompileShader(program);
-	}
+	program = glCreateShaderProgramv(type, shader_nb, sources);
 
-	bool status;
-	if (GLLoader::found_GL_ARB_separate_shader_objects)
-		status = ValidateProgram(program);
-	else
-		status = ValidateShader(program);
+	bool status = ValidateProgram(program);
 
 	if (!status) {
 		// print extra info
@@ -286,7 +282,46 @@ GLuint GSShaderOGL::Compile(const std::string& glsl_file, const std::string& ent
 		fprintf(stderr, "\n%s", macro_sel.c_str());
 		fprintf(stderr, "\n");
 	}
+
+	m_prog_to_delete.push_back(program);
+
 	return program;
+}
+
+// Same as above but for not-separated build
+GLuint GSShaderOGL::CompileShader(const std::string& glsl_file, const std::string& entry, GLenum type, const char* glsl_h_code, const std::string& macro_sel)
+{
+	ASSERT(glsl_h_code != NULL);
+
+	GLuint shader = 0;
+
+	// Note it is better to separate header and source file to have the good line number
+	// in the glsl compiler report
+	const int shader_nb = 3;
+	const char* sources[shader_nb];
+
+	std::string header = GenGlslHeader(entry, type, macro_sel);
+
+	sources[0] = header.c_str();
+	sources[1] = m_common_header.data();
+	sources[2] = glsl_h_code;
+
+	shader =  glCreateShader(type);
+	glShaderSource(shader, shader_nb, sources, NULL);
+	glCompileShader(shader);
+
+	bool status = ValidateShader(shader);
+
+	if (!status) {
+		// print extra info
+		fprintf(stderr, "%s (entry %s, prog %d) :", glsl_file.c_str(), entry.c_str(), shader);
+		fprintf(stderr, "\n%s", macro_sel.c_str());
+		fprintf(stderr, "\n");
+	}
+
+	m_shad_to_delete.push_back(shader);
+
+	return shader;
 }
 
 // This function will get the binary program. Normally it must be used a caching
@@ -296,7 +331,7 @@ GLuint GSShaderOGL::Compile(const std::string& glsl_file, const std::string& ent
 // GLSL improvement (unfortunately).
 int GSShaderOGL::DumpAsm(const std::string& file, GLuint p)
 {
-	if (!GLLoader::nvidia_buggy_driver) return 0;
+	if (!GLLoader::vendor_id_nvidia) return 0;
 
 	GLint   binaryLength;
 	glGetProgramiv(p, GL_PROGRAM_BINARY_LENGTH, &binaryLength);
@@ -346,13 +381,4 @@ int GSShaderOGL::DumpAsm(const std::string& file, GLuint p)
 	delete[] binary;
 
 	return instructions;
-}
-
-void GSShaderOGL::Delete(GLuint s)
-{
-	if (GLLoader::found_GL_ARB_separate_shader_objects) {
-		glDeleteProgram(s);
-	} else {
-		glDeleteShader(s);
-	}
 }

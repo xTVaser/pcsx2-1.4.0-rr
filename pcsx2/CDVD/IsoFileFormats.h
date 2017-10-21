@@ -19,6 +19,7 @@
 #include "wx/wfstream.h"
 #include "AsyncFileReader.h"
 #include "CompressedFileReader.h"
+#include <memory>
 
 enum isoType
 {
@@ -66,7 +67,7 @@ protected:
 	
 public:	
 	InputIsoFile();
-	virtual ~InputIsoFile() throw();
+	virtual ~InputIsoFile();
 
 	bool IsOpened() const;
 	
@@ -113,14 +114,14 @@ protected:
 	u32			m_blocks;
 
 	// dtable / dtablesize are used when reading blockdumps
-	ScopedArray<u32>	m_dtable;
-	int					m_dtablesize;
+	std::unique_ptr<u32[]> m_dtable;
+	int m_dtablesize;
 
-	ScopedPtr<wxFileOutputStream>	m_outstream;
+	std::unique_ptr<wxFileOutputStream>	m_outstream;
 		
 public:	
 	OutputIsoFile();
-	virtual ~OutputIsoFile() throw();
+	virtual ~OutputIsoFile();
 
 	bool IsOpened() const;
 	

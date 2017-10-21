@@ -31,6 +31,7 @@ GenericListView::GenericListView(wxWindow* parent, GenericListViewColumn* column
 	: wxListView(parent,wxID_ANY,wxDefaultPosition,wxDefaultSize,wxLC_VIRTUAL|wxLC_REPORT|wxLC_SINGLE_SEL|wxNO_BORDER)
 {
 	m_isInResizeColumn = false;
+	dontResizeColumnsInSizeEventHandler = false;
 
 	insertColumns(columns, columnCount);
 }
@@ -72,7 +73,12 @@ void GenericListView::resizeColumns(int totalWidth)
 
 void GenericListView::sizeEvent(wxSizeEvent& evt)
 {
-	resizeColumns(GetClientSize().x);
+	// HACK: On Windows, it seems that if you resize the columns in the size
+	// event handler when the scrollbar disappears, the listview contents may
+	// decide to disappear as well. So let's avoid the resize for this case.
+	if (!dontResizeColumnsInSizeEventHandler)
+		resizeColumns(GetClientSize().x);
+	dontResizeColumnsInSizeEventHandler = false;
 	evt.Skip();
 }
 
@@ -81,17 +87,17 @@ void GenericListView::keydownEvent(wxKeyEvent& evt)
 	int sel = GetFirstSelected();
 	switch (evt.GetKeyCode())
 	{
-	case WXK_DELETE:
-		if (sel+1 == GetItemCount())
-			Select(sel-1);
-		break;
 	case WXK_UP:
-		if (sel > 0)
+		if (sel > 0) {
 			Select(sel-1);
+			Focus(sel-1);
+		}
 		break;
 	case WXK_DOWN:
-		if (sel+1 < GetItemCount())
+		if (sel+1 < GetItemCount()) {
 			Select(sel+1);
+			Focus(sel+1);
+		}
 		break;
 	}
 
@@ -114,7 +120,7 @@ void GenericListView::update()
 		// make the scrollbar go away, so let's make it recalculate if it needs it
 		SetItemCount(newRows);
 	}
-
+	dontResizeColumnsInSizeEventHandler = true;
 	Refresh();
 }
 
@@ -259,6 +265,8 @@ wxString BreakpointList::getColumnText(int item, int col) const
 			if (isMemory) {
 				dest.Write(L"-");
 			} else {
+				if (!cpu->isAlive())
+					break;
 				char temp[256];
 				disasm->getOpcodeText(displayedBreakPoints_[index].addr, temp);
 				dest.Write("%s",temp);
@@ -267,7 +275,7 @@ wxString BreakpointList::getColumnText(int item, int col) const
 		break;
 	case BPL_CONDITION:
 		{
-			if (isMemory || displayedBreakPoints_[index].hasCond == false) {
+			if (isMemory || !displayedBreakPoints_[index].hasCond) {
 				dest.Write("-");
 			} else {
 				dest.Write("%s",displayedBreakPoints_[index].cond.expressionString);
@@ -463,7 +471,7 @@ void BreakpointList::showMenu(const wxPoint& pos)
 		menu.AppendCheckItem(ID_BREAKPOINTLIST_ENABLE,	L"Enable");
 		menu.Append(ID_BREAKPOINTLIST_EDIT,				L"Edit");
 		menu.AppendSeparator();
-			
+
 		// check if the breakpoint is enabled
 		bool enabled;
 		if (isMemory)
@@ -476,7 +484,7 @@ void BreakpointList::showMenu(const wxPoint& pos)
 
 	menu.Append(ID_BREAKPOINTLIST_ADDNEW,			L"Add new");
 
-	menu.Connect(wxEVT_COMMAND_MENU_SELECTED, (wxObjectEventFunction)&BreakpointList::onPopupClick, NULL, this);
+	menu.Bind(wxEVT_MENU, &BreakpointList::onPopupClick, this);
 	PopupMenu(&menu,pos);
 }
 
@@ -691,6 +699,8 @@ wxString StackFramesList::getColumnText(int item, int col) const
 		break;
 	case SF_CUROPCODE:
 		{
+			if (!cpu->isAlive())
+				break;
 			char temp[512];
 			disassembly->getOpcodeText(frame.pc,temp);
 			dest.Write("%s",temp);

@@ -103,7 +103,7 @@ bool GSRendererCS::CreateDevice(GSDevice* dev_unk)
 	sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	sd.MinLOD = -FLT_MAX;
 	sd.MaxLOD = FLT_MAX;
-	sd.MaxAnisotropy = theApp.GetConfig("MaxAnisotropy", 0);
+	sd.MaxAnisotropy = theApp.GetConfigI("MaxAnisotropy");
 	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
 	hr = (*dev)->CreateSamplerState(&sd, &m_ss);
@@ -288,16 +288,16 @@ bool GSRendererCS::CreateDevice(GSDevice* dev_unk)
 
 	// PS
 
-	D3D11_SHADER_MACRO macro[] =
+	D3D_SHADER_MACRO macro[] =
 	{
 		{NULL, NULL},
 	};
 
 	try
 	{
-		vector<unsigned char> shader;
+		std::vector<char> shader;
 		theApp.LoadResource(IDR_CS_FX, shader);
-		dev->CompileShader((const char *)shader.data(), shader.size(), "cs.fx", "ps_main0", macro, &m_ps0);
+		dev->CompileShader(shader.data(), shader.size(), "cs.fx", nullptr, "ps_main0", macro, &m_ps0);
 	}
 	catch (GSDXRecoverableError)
 	{
@@ -338,14 +338,14 @@ void GSRendererCS::VSync(int field)
 	//printf("%lld\n", m_perfmon.GetFrame());
 }
 
-GSTexture* GSRendererCS::GetOutput(int i)
+GSTexture* GSRendererCS::GetOutput(int i, int& y_offset)
 {
 	// TODO: create a compute shader which unswizzles the frame from m_vm to the output texture
 
 	const GSRegDISPFB& DISPFB = m_regs->DISP[i].DISPFB;
 
 	int w = DISPFB.FBW * 64;
-	int h = GetFrameRect(i).bottom;
+	int h = GetFramebufferHeight();
 
 	// TODO: round up bottom
 
@@ -501,7 +501,7 @@ void GSRendererCS::Draw()
 	{
 		GSVertexShader11 vs;
 
-		hash_map<uint32, GSVertexShader11>::const_iterator i = m_vs.find(vs_sel);
+		auto i = std::as_const(m_vs).find(vs_sel);
 
 		if(i != m_vs.end())
 		{
@@ -509,12 +509,12 @@ void GSRendererCS::Draw()
 		}
 		else
 		{
-			string str[2];
+			std::string str[2];
 
 			str[0] = format("%d", vs_sel.tme);
 			str[1] = format("%d", vs_sel.fst);
 
-			D3D11_SHADER_MACRO macro[] =
+			D3D_SHADER_MACRO macro[] =
 			{
 				{"VS_TME", str[0].c_str()},
 				{"VS_FST", str[1].c_str()},
@@ -532,9 +532,9 @@ void GSRendererCS::Draw()
 				{"COLOR", 1, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			};
 
-			vector<unsigned char> shader;
+			std::vector<char> shader;
 			theApp.LoadResource(IDR_CS_FX, shader);
-			dev->CompileShader((const char *)shader.data(), shader.size(), "cs.fx", "vs_main", macro, &vs.vs, layout, countof(layout), &vs.il);
+			dev->CompileShader(shader.data(), shader.size(), "cs.fx", nullptr, "vs_main", macro, &vs.vs, layout, countof(layout), &vs.il);
 
 			m_vs[vs_sel] = vs;
 		}
@@ -558,7 +558,7 @@ void GSRendererCS::Draw()
 	{
 		gs_sel.prim = j == 0 ? m_vt.m_primclass : GS_SPRITE_CLASS;
 
-		hash_map<uint32, CComPtr<ID3D11GeometryShader> >::const_iterator i = m_gs.find(gs_sel);
+		auto i = std::as_const(m_gs).find(gs_sel);
 
 		if(i != m_gs.end())
 		{
@@ -566,21 +566,21 @@ void GSRendererCS::Draw()
 		}
 		else
 		{
-			string str[2];
+			std::string str[2];
 
 			str[0] = format("%d", gs_sel.iip);
 			str[1] = format("%d", j == 0 ? gs_sel.prim : GS_SPRITE_CLASS);
 
-			D3D11_SHADER_MACRO macro[] =
+			D3D_SHADER_MACRO macro[] =
 			{
 				{"GS_IIP", str[0].c_str()},
 				{"GS_PRIM", str[1].c_str()},
 				{NULL, NULL},
 			};
 
-			vector<unsigned char> shader;
+			std::vector<char> shader;
 			theApp.LoadResource(IDR_CS_FX, shader);
-			dev->CompileShader((const char *)shader.data(), shader.size(), "cs.fx", "gs_main", macro, &gs[j]);
+			dev->CompileShader(shader.data(), shader.size(), "cs.fx", nullptr, "gs_main", macro, &gs[j]);
 
 			m_gs[gs_sel] = gs[j];
 		}
@@ -597,7 +597,7 @@ void GSRendererCS::Draw()
 
 	CComPtr<ID3D11PixelShader> ps[2] = {m_ps0, NULL};
 
-	hash_map<uint32, CComPtr<ID3D11PixelShader> >::const_iterator i = m_ps1.find(ps_sel);
+	auto i = std::as_const(m_ps1).find(ps_sel);
 
 	if(i != m_ps1.end())
 	{
@@ -605,13 +605,13 @@ void GSRendererCS::Draw()
 	}
 	else
 	{
-		string str[15];
+		std::string str[15];
 
 		str[0] = format("%d", PS_BATCH_SIZE);
 		str[1] = format("%d", context->FRAME.PSM);
 		str[2] = format("%d", context->ZBUF.PSM);
 
-		D3D11_SHADER_MACRO macro[] =
+		D3D_SHADER_MACRO macro[] =
 		{
 			{"PS_BATCH_SIZE", str[0].c_str()},
 			{"PS_FPSM", str[1].c_str()},
@@ -619,9 +619,9 @@ void GSRendererCS::Draw()
 			{NULL, NULL},
 		};
 
-		vector<unsigned char> shader;
+		std::vector<char> shader;
 		theApp.LoadResource(IDR_CS_FX, shader);
-		dev->CompileShader((const char *)shader.data(), shader.size(), "cs.fx", "ps_main1", macro, &ps[1]);
+		dev->CompileShader(shader.data(), shader.size(), "cs.fx", nullptr, "ps_main1", macro, &ps[1]);
 
 		m_ps1[ps_sel] = ps[1];
 	}
@@ -747,7 +747,7 @@ void GSRendererCS::Write(GSOffset* off, const GSVector4i& r)
 			ctx->UpdateSubresource(m_vm, 0, &box, m_mem.m_vm8 + page * PAGE_SIZE, 0, 0);
 */
 			if(0)
-			printf("[%lld] write %05x %d %d (%d)\n", __rdtsc(), off->bp, off->bw, off->psm, page);
+			printf("[%lld] write %05x %u %u (%u)\n", __rdtsc(), off->bp, off->bw, off->psm, page);
 		}
 	}
 
@@ -807,7 +807,7 @@ void GSRendererCS::Read(GSOffset* off, const GSVector4i& r, bool invalidate)
 				ctx->Unmap(m_pb, 0);
 				
 				if(0)
-				printf("[%lld] read %05x %d %d (%d)\n", __rdtsc(), off->bp, off->bw, off->psm, page);
+				printf("[%lld] read %05x %u %u (%u)\n", __rdtsc(), off->bp, off->bw, off->psm, page);
 			}
 		}
 	}
@@ -825,7 +825,7 @@ bool GSRendererCS::GetOffsetBuffer(OffsetBuffer** fzbo)
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvd;
 	D3D11_SUBRESOURCE_DATA data;
 
-	hash_map<uint32, OffsetBuffer>::iterator i = m_offset.find(m_context->offset.fzb->hash);
+	auto i = m_offset.find(m_context->offset.fzb->hash);
 
 	if(i == m_offset.end())
 	{

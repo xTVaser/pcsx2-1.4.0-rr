@@ -412,12 +412,12 @@ void ProcessButtonBinding(Binding *b, ButtonSum *sum, int value)
         return;
 
     /* Note:  Value ranges of FULLY_DOWN, and sensitivity of
-     *  BASE_SENSITIVITY corresponds to an axis/button being exactly fully down.
-     *  Math in next line takes care of those two conditions, rounding as necessary.
-     *  Done using __int64s because overflows will occur when
-     *  sensitivity > BASE_SENSITIVITY and/or value > FULLY_DOWN.  Latter only happens
-     *  for relative axis.
-     */
+	 *  BASE_SENSITIVITY corresponds to an axis/button being exactly fully down.
+	 *  Math in next line takes care of those two conditions, rounding as necessary.
+	 *  Done using __int64s because overflows will occur when
+	 *  sensitivity > BASE_SENSITIVITY and/or value > FULLY_DOWN.  Latter only happens
+	 *  for relative axis.
+	 */
     int force = (int)((((sensitivity * (255 * (__int64)value)) + BASE_SENSITIVITY / 2) / BASE_SENSITIVITY + FULLY_DOWN / 2) / FULLY_DOWN);
     AddForce(sum, b->command, force);
 }
