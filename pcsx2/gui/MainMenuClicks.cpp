@@ -71,12 +71,6 @@ void MainEmuFrame::Menu_SelectPluginsBios_Click(wxCommandEvent &event)
 	AppOpenDialog<ComponentsConfigDialog>( this );
 }
 
-void MainEmuFrame::Menu_Language_Click(wxCommandEvent &event)
-{
-	//AppOpenDialog<InterfaceConfigDialog>( this );
-	InterfaceConfigDialog(this).ShowModal();
-}
-
 void MainEmuFrame::Menu_ChangeLang(wxCommandEvent &event) // Always in English
 {
 	AppOpenDialog<InterfaceLanguageDialog>(this);
@@ -97,7 +91,7 @@ static void WipeSettings()
 	//wxRmdir( GetSettingsFolder().ToString() );
 
 	wxGetApp().GetRecentIsoManager().Clear();
-	g_Conf = new AppConfig();
+	g_Conf = std::unique_ptr<AppConfig>(new AppConfig());
 	sMainFrame.RemoveCdvdMenu();
 
 	sApp.WipeUserModeSettings();
@@ -105,8 +99,11 @@ static void WipeSettings()
 
 void MainEmuFrame::RemoveCdvdMenu()
 {
-	if( wxMenuItem* item = m_menuCDVD.FindItem(MenuId_IsoSelector) )
-		m_menuCDVD.Remove( item );
+	// Delete() keeps the sub menu and delete the menu item.
+	// Remove() does not delete the menu item.
+	if (m_menuItem_RecentIsoMenu)
+		m_menuCDVD.Delete(m_menuItem_RecentIsoMenu);
+	m_menuItem_RecentIsoMenu = nullptr;
 }
 
 void MainEmuFrame::Menu_ResetAllSettings_Click(wxCommandEvent &event)
@@ -137,7 +134,7 @@ wxWindowID SwapOrReset_Iso( wxWindow* owner, IScopedCoreThread& core_control, co
 {
 	wxWindowID result = wxID_CANCEL;
 
-	if( (g_Conf->CdvdSource == CDVDsrc_Iso) && (isoFilename == g_Conf->CurrentIso) )
+	if( (g_Conf->CdvdSource == CDVD_SourceType::Iso) && (isoFilename == g_Conf->CurrentIso) )
 	{
 		core_control.AllowResume();
 		return result;
@@ -162,12 +159,12 @@ wxWindowID SwapOrReset_Iso( wxWindow* owner, IScopedCoreThread& core_control, co
 		}
 	}
 
-	g_Conf->CdvdSource = CDVDsrc_Iso;
+	g_Conf->CdvdSource = CDVD_SourceType::Iso;
 	SysUpdateIsoSrcFile( isoFilename );
 	if( result == wxID_RESET )
 	{
 		core_control.DisallowResume();
-		sApp.SysExecute( CDVDsrc_Iso );
+		sApp.SysExecute(CDVD_SourceType::Iso);
 	}
 	else
 	{
@@ -177,7 +174,7 @@ wxWindowID SwapOrReset_Iso( wxWindow* owner, IScopedCoreThread& core_control, co
 		core_control.AllowResume();
 	}
 
-	GetMainFrame().EnableCdvdPluginSubmenu( g_Conf->CdvdSource == CDVDsrc_Plugin );
+	GetMainFrame().EnableCdvdPluginSubmenu( g_Conf->CdvdSource == CDVD_SourceType::Plugin);
 
 	return result;
 }
@@ -194,7 +191,7 @@ wxWindowID SwapOrReset_CdvdSrc( wxWindow* owner, CDVD_SourceType newsrc )
 
 		wxString changeMsg;
 		changeMsg.Printf(_("You've selected to switch the CDVD source from %s to %s."),
-			CDVD_SourceLabels[g_Conf->CdvdSource], CDVD_SourceLabels[newsrc] );
+			CDVD_SourceLabels[enum_cast(g_Conf->CdvdSource)], CDVD_SourceLabels[enum_cast(newsrc)] );
 
 		dialog += dialog.Heading(changeMsg + L"\n\n" +
 			_("Do you want to swap discs or boot the new image (system reset)?")
@@ -215,7 +212,9 @@ wxWindowID SwapOrReset_CdvdSrc( wxWindow* owner, CDVD_SourceType newsrc )
 
 	if( result != wxID_RESET )
 	{
-		Console.Indent().WriteLn( L"(CdvdSource) HotSwapping CDVD source types from %s to %s.", CDVD_SourceLabels[oldsrc], CDVD_SourceLabels[newsrc] );
+		Console.Indent().WriteLn(L"(CdvdSource) HotSwapping CDVD source types from %s to %s.",
+			WX_STR(wxString(CDVD_SourceLabels[enum_cast(oldsrc)])),
+			WX_STR(wxString(CDVD_SourceLabels[enum_cast(newsrc)])));
 		//CoreThread.ChangeCdvdSource();
 		sMainFrame.UpdateIsoSrcSelection();
 		core.AllowResume();
@@ -226,7 +225,7 @@ wxWindowID SwapOrReset_CdvdSrc( wxWindow* owner, CDVD_SourceType newsrc )
 		sApp.SysExecute( g_Conf->CdvdSource );
 	}
 
-	GetMainFrame().EnableCdvdPluginSubmenu( g_Conf->CdvdSource == CDVDsrc_Plugin );
+	GetMainFrame().EnableCdvdPluginSubmenu( g_Conf->CdvdSource == CDVD_SourceType::Plugin );
 
 	return result;
 }
@@ -316,7 +315,7 @@ void MainEmuFrame::_DoBootCdvd()
 {
 	ScopedCoreThreadPause paused_core;
 
-	if( g_Conf->CdvdSource == CDVDsrc_Iso )
+	if( g_Conf->CdvdSource == CDVD_SourceType::Iso )
 	{
 		bool selector = g_Conf->CurrentIso.IsEmpty();
 
@@ -336,7 +335,7 @@ void MainEmuFrame::_DoBootCdvd()
 			selector = true;
 		}
 
-		if( selector )
+		if( selector || g_Conf->AskOnBoot)
 		{
 			wxString result;
 			if( !_DoSelectIsoBrowser( result ) )
@@ -372,13 +371,13 @@ void MainEmuFrame::EnableCdvdPluginSubmenu(bool isEnable)
 
 void MainEmuFrame::Menu_CdvdSource_Click( wxCommandEvent &event )
 {
-	CDVD_SourceType newsrc = CDVDsrc_NoDisc;
+	CDVD_SourceType newsrc = CDVD_SourceType::NoDisc;
 
 	switch( event.GetId() )
 	{
-		case MenuId_Src_Iso:	newsrc = CDVDsrc_Iso;		break;
-		case MenuId_Src_Plugin:	newsrc = CDVDsrc_Plugin;	break;
-		case MenuId_Src_NoDisc: newsrc = CDVDsrc_NoDisc;	break;
+		case MenuId_Src_Iso:	newsrc = CDVD_SourceType::Iso;		break;
+		case MenuId_Src_Plugin:	newsrc = CDVD_SourceType::Plugin;	break;
+		case MenuId_Src_NoDisc: newsrc = CDVD_SourceType::NoDisc;	break;
 		jNO_DEFAULT
 	}
 
@@ -417,6 +416,42 @@ void MainEmuFrame::Menu_IsoBrowse_Click( wxCommandEvent &event )
 	AppSaveSettings();		// save the new iso selection; update menus!
 }
 
+void MainEmuFrame::Menu_IsoClear_Click(wxCommandEvent &event)
+{
+	wxDialogWithHelpers dialog(this, _("Confirm clearing ISO list"));
+	dialog += dialog.Heading(_("This will clear the ISO list. If an ISO is running it will remain in the list. Continue?"));
+
+	bool confirmed = pxIssueConfirmation(dialog, MsgButtons().YesNo()) == wxID_YES;
+
+	if (confirmed)
+	{
+		// If the CDVD mode is not ISO, or the system isn't running, wipe the CurrentIso field in INI file
+		if (g_Conf->CdvdSource != CDVD_SourceType::Iso || !SysHasValidState())
+			SysUpdateIsoSrcFile("");
+		wxGetApp().GetRecentIsoManager().Clear();
+		AppSaveSettings();
+	}
+}
+
+void MainEmuFrame::Menu_Ask_On_Boot_Click(wxCommandEvent &event)
+{
+	g_Conf->AskOnBoot = event.IsChecked();
+
+	if (SysHasValidState())
+		return;
+
+	wxGetApp().GetRecentIsoManager().EnableItems(!event.IsChecked());
+	FindItemInMenuBar(MenuId_IsoBrowse)->Enable(!event.IsChecked());
+}
+
+void MainEmuFrame::Menu_Debug_CreateBlockdump_Click(wxCommandEvent &event)
+{
+	g_Conf->EmuOptions.CdvdDumpBlocks = event.IsChecked();
+	if (g_Conf->EmuOptions.CdvdDumpBlocks && SysHasValidState())
+		Console.Warning("VM must be rebooted to create a useful block dump.");
+
+	AppSaveSettings();
+}
 
 void MainEmuFrame::Menu_MultitapToggle_Click( wxCommandEvent& )
 {
@@ -443,18 +478,21 @@ void MainEmuFrame::Menu_EnableBackupStates_Click( wxCommandEvent& )
 void MainEmuFrame::Menu_EnablePatches_Click( wxCommandEvent& )
 {
 	g_Conf->EmuOptions.EnablePatches = GetMenuBar()->IsChecked( MenuId_EnablePatches );
-    AppSaveSettings();
+	AppApplySettings();
+	AppSaveSettings();
 }
 
 void MainEmuFrame::Menu_EnableCheats_Click( wxCommandEvent& )
 {
 	g_Conf->EmuOptions.EnableCheats  = GetMenuBar()->IsChecked( MenuId_EnableCheats );
-    AppSaveSettings();
+	AppApplySettings();
+	AppSaveSettings();
 }
 
 void MainEmuFrame::Menu_EnableWideScreenPatches_Click( wxCommandEvent& )
 {
 	g_Conf->EmuOptions.EnableWideScreenPatches  = GetMenuBar()->IsChecked( MenuId_EnableWideScreenPatches );
+	AppApplySettings();
 	AppSaveSettings();
 }
 
@@ -530,7 +568,7 @@ void MainEmuFrame::Menu_Exit_Click(wxCommandEvent &event)
 class SysExecEvent_ToggleSuspend : public SysExecEvent
 {
 public:
-	virtual ~SysExecEvent_ToggleSuspend() throw() {}
+	virtual ~SysExecEvent_ToggleSuspend() = default;
 
 	wxString GetEventName() const { return L"ToggleSuspendResume"; }
 
@@ -607,7 +645,7 @@ void MainEmuFrame::Menu_ShowConsole(wxCommandEvent &event)
 	// Use messages to relay open/close commands (thread-safe)
 
 	g_Conf->ProgLogBox.Visible = event.IsChecked();
-	wxCommandEvent evt( wxEVT_COMMAND_MENU_SELECTED, g_Conf->ProgLogBox.Visible ? wxID_OPEN : wxID_CLOSE );
+	wxCommandEvent evt( wxEVT_MENU, g_Conf->ProgLogBox.Visible ? wxID_OPEN : wxID_CLOSE );
 	wxGetApp().ProgramLog_PostEvent( evt );
 }
 

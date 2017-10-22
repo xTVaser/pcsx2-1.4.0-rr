@@ -24,6 +24,7 @@
 
 #include <wx/stdpaths.h>
 #include "DebugTools/Debug.h"
+#include <memory>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // PathDefs Namespace -- contains default values for various pcsx2 path names and locations.
@@ -56,8 +57,7 @@ namespace PathDefs
 
 		const wxDirName& Settings()
 		{
-			static const wxDirName retval(wxsFormat(L"inis_%d.%d.%d",
-			PCSX2_VersionHi, PCSX2_VersionMid, PCSX2_VersionLo));
+			static const wxDirName retval( L"inis" );
 			return retval;
 		}
 
@@ -535,7 +535,7 @@ AppConfig::AppConfig()
 {
 	LanguageId			= wxLANGUAGE_DEFAULT;
 	LanguageCode		= L"default";
-	RecentIsoCount		= 12;
+	RecentIsoCount		= 20;
 	Listbook_ImageSize	= 32;
 	Toolbar_ImageSize	= 24;
 	Toolbar_ShowLabels	= true;
@@ -549,13 +549,16 @@ AppConfig::AppConfig()
 	EnablePresets		= true;
 	PresetIndex			= 1;
 
-	CdvdSource			= CDVDsrc_Iso;
+	CdvdSource			= CDVD_SourceType::Iso;
 
 	// To be moved to FileMemoryCard pluign (someday)
 	for( uint slot=0; slot<8; ++slot )
 	{
 		Mcd[slot].Enabled	= !FileMcd_IsMultitapSlot(slot);	// enables main 2 slots
 		Mcd[slot].Filename	= FileMcd_GetDefaultName( slot );
+
+		// Folder memory card is autodetected later.
+		Mcd[slot].Type = MemoryCardType::MemoryCard_File;
 	}
 
 	GzipIsoIndexTemplate = L"$(f).pindex.tmp";
@@ -660,12 +663,14 @@ void AppConfig::LoadSaveRootItems( IniInterface& ini )
 	CurrentIso = res.GetFullPath();
 
 	IniEntry( CurrentELF );
+	IniEntry( CurrentIRX );
 
 	IniEntry( EnableSpeedHacks );
 	IniEntry( EnableGameFixes );
 
 	IniEntry( EnablePresets );
 	IniEntry( PresetIndex );
+	IniEntry( AskOnBoot );
 	
 	#ifdef __WXMSW__
 	IniEntry( McdCompressNTFS );
@@ -843,8 +848,10 @@ AppConfig::GSWindowOptions::GSWindowOptions()
 	WindowPos				= wxDefaultPosition;
 	IsMaximized				= false;
 	IsFullscreen			= false;
+	EnableVsyncWindowFlag	= false;
 
-    IsToggleFullscreenOnDoubleClick = true;
+	IsToggleFullscreenOnDoubleClick = true;
+	IsToggleAspectRatioSwitch = false;
 }
 
 void AppConfig::GSWindowOptions::SanityCheck()
@@ -880,8 +887,10 @@ void AppConfig::GSWindowOptions::LoadSave( IniInterface& ini )
 	IniEntry( WindowPos );
 	IniEntry( IsMaximized );
 	IniEntry( IsFullscreen );
+	IniEntry( EnableVsyncWindowFlag );
 
-    IniEntry( IsToggleFullscreenOnDoubleClick );
+	IniEntry( IsToggleFullscreenOnDoubleClick );
+	IniEntry( IsToggleAspectRatioSwitch );
 
 	static const wxChar* AspectRatioNames[] =
 	{
@@ -940,6 +949,7 @@ AppConfig::UiTemplateOptions::UiTemplateOptions()
 	OutputField			= L"Field";
 	OutputProgressive	= L"Progressive";
 	OutputInterlaced	= L"Interlaced";
+	Paused              = L"<PAUSED> ";
 	//TitleTemplate		= L"Slot: ${slot} | Speed: ${speed} (${vfps}) | Limiter: ${limiter} | ${gsdx} | ${omodei} | ${cpuusage}";
 	//TitleTemplate		= L"Frame: ${frame} | Slot: ${slot} | Speed: ${speed} (${vfps}) | Limiter: ${limiter} | ${gsdx} | ${omodei} | ${cpuusage}";//--TAS--//
 	TitleTemplate		= L"Frame: ${frame} | MaxFrame: ${maxFrame} | Mode: ${mode} | Speed: ${speed} (${vfps}) | Limiter: ${limiter} | ${cpuusage}";
@@ -957,6 +967,7 @@ void AppConfig::UiTemplateOptions::LoadSave(IniInterface& ini)
 	IniEntry(OutputField);
 	IniEntry(OutputProgressive);
 	IniEntry(OutputInterlaced);
+	IniEntry(Paused);
 	IniEntry(TitleTemplate);
 }
 
@@ -1038,7 +1049,7 @@ bool AppConfig::IsOkApplyPreset(int n)
 	EmuOptions.Gamefixes			= default_Pcsx2Config.Gamefixes;
 	EmuOptions.Speedhacks			= default_Pcsx2Config.Speedhacks;
 	EmuOptions.Speedhacks.bitset	= 0; //Turn off individual hacks to make it visually clear they're not used.
-	EmuOptions.Speedhacks.vuThread	= original_SpeedHacks.vuThread; // MTVU is not modified by presets
+	EmuOptions.Speedhacks.vuThread	= original_SpeedHacks.vuThread;
 	EnableSpeedHacks = true;
 
 	//Actual application of current preset over the base settings which all presets use (mostly pcsx2's default values).
@@ -1070,11 +1081,13 @@ bool AppConfig::IsOkApplyPreset(int n)
 					EmuOptions.Speedhacks.IntcStat = true;
 					EmuOptions.Speedhacks.WaitLoop = true;
 					EmuOptions.Speedhacks.vuFlagHack = true;
+					break;
 
 		case 0 :	//Base preset: Mostly pcsx2's defaults.
-					
-		
+					//Force disable MTVU hack on safest preset as it has lots of issues (Crashes/Slow downs) on various games.
+					EmuOptions.Speedhacks.vuThread = false;
 					break;
+
 		default:	Console.WriteLn("Developer Warning: Preset #%d is not implemented. (--> Using application default).", n);
 	}
 
@@ -1169,7 +1182,7 @@ protected:
 	wxString	m_empty;
 
 public:
-	virtual ~pxDudConfig() {}
+	virtual ~pxDudConfig() = default;
 
 	virtual void SetPath(const wxString& ) {}
 	virtual const wxString& GetPath() const { return m_empty; }
@@ -1216,14 +1229,14 @@ class AppIniSaver : public IniSaver
 {
 public:
 	AppIniSaver();
-	virtual ~AppIniSaver() throw() {}
+	virtual ~AppIniSaver() = default;
 };
 
 class AppIniLoader : public IniLoader
 {
 public:
 	AppIniLoader();
-	virtual ~AppIniLoader() throw() {}
+	virtual ~AppIniLoader() = default;
 };
 
 AppIniSaver::AppIniSaver()
@@ -1242,7 +1255,7 @@ static void LoadUiSettings()
 	ConLog_LoadSaveSettings( loader );
 	SysTraceLog_LoadSaveSettings( loader );
 
-	g_Conf = new AppConfig();
+	g_Conf = std::make_unique<AppConfig>();
 	g_Conf->LoadSave( loader );
 
 	if( !wxFile::Exists( g_Conf->CurrentIso ) )
@@ -1256,8 +1269,8 @@ static void LoadVmSettings()
 	// Load virtual machine options and apply some defaults overtop saved items, which
 	// are regulated by the PCSX2 UI.
 
-	ScopedPtr<wxFileConfig> vmini( OpenFileConfig( GetVmSettingsFilename() ) );
-	IniLoader vmloader( vmini );
+	std::unique_ptr<wxFileConfig> vmini( OpenFileConfig( GetVmSettingsFilename() ) );
+	IniLoader vmloader( vmini.get() );
 	g_Conf->EmuOptions.LoadSave( vmloader );
 	g_Conf->EmuOptions.GS.LimitScalar = g_Conf->Framerate.NominalScalar;
 
@@ -1293,8 +1306,8 @@ static void SaveUiSettings()
 
 static void SaveVmSettings()
 {
-	ScopedPtr<wxFileConfig> vmini( OpenFileConfig( GetVmSettingsFilename() ) );
-	IniSaver vmsaver( vmini );
+	std::unique_ptr<wxFileConfig> vmini( OpenFileConfig( GetVmSettingsFilename() ) );
+	IniSaver vmsaver( vmini.get() );
 	g_Conf->EmuOptions.LoadSave( vmsaver );
 
 	sApp.DispatchVmSettingsEvent( vmsaver );
@@ -1302,15 +1315,15 @@ static void SaveVmSettings()
 
 static void SaveRegSettings()
 {
-	ScopedPtr<wxConfigBase> conf_install;
+	std::unique_ptr<wxConfigBase> conf_install;
 
 	if (InstallationMode == InstallMode_Portable) return;
 
 	// sApp. macro cannot be use because you need the return value of OpenInstallSettingsFile method
-	if( Pcsx2App* __app_ = (Pcsx2App*)wxApp::GetInstance() ) conf_install = (*__app_).OpenInstallSettingsFile();
+	if( Pcsx2App* __app_ = (Pcsx2App*)wxApp::GetInstance() ) conf_install = std::unique_ptr<wxConfigBase>((*__app_).OpenInstallSettingsFile());
 	conf_install->SetRecordDefaults(false);
 
-	App_SaveInstallSettings( conf_install );
+	App_SaveInstallSettings( conf_install.get() );
 }
 
 void AppSaveSettings()
@@ -1318,11 +1331,11 @@ void AppSaveSettings()
 	// If multiple SaveSettings messages are requested, we want to ignore most of them.
 	// Saving settings once when the GUI is idle should be fine. :)
 
-	static u32 isPosted = false;
+	static std::atomic<bool> isPosted(false);
 
 	if( !wxThread::IsMain() )
 	{
-		if( !AtomicExchange(isPosted, true) )
+		if( !isPosted.exchange(true) )
 			wxGetApp().PostIdleMethod( AppSaveSettings );
 
 		return;
@@ -1334,7 +1347,7 @@ void AppSaveSettings()
 	SaveVmSettings();
 	SaveRegSettings(); // save register because of PluginsFolder change
 
-	AtomicExchange( isPosted, false );
+	isPosted = false;
 }
 
 

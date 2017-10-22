@@ -235,7 +235,7 @@ SaveStateBase& SaveStateBase::FreezeInternals()
 
 	if( IsLoading() )
 		PostLoadPrep();
-	
+
 	keymovieFreeze();	//--TAS--//
 
 	return *this;
@@ -316,8 +316,6 @@ memLoadingState::memLoadingState( const SafeArray<u8>* load_from )
 	: SaveStateBase( const_cast<SafeArray<u8>*>(load_from) )
 {
 }
-
-memLoadingState::~memLoadingState() throw() { }
 
 // Loading of state data from a memory buffer...
 void memLoadingState::FreezeMem( void* data, int size )

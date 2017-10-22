@@ -20,6 +20,7 @@
 #include "CpuUsageProvider.h"
 #include "wx/dcbuffer.h"
 #include <wx/dcgraph.h>
+#include <memory>
 
 
 enum LimiterModeType
@@ -41,19 +42,19 @@ class GSPanel : public wxWindow
 	typedef wxWindow _parent;
 
 protected:
-	ScopedPtr<AcceleratorDictionary>	m_Accels;
+	std::unique_ptr<AcceleratorDictionary> m_Accels;
 
 	wxTimer					m_HideMouseTimer;
 	bool					m_CursorShown;
 	bool					m_HasFocus;
 	bool					m_coreRunning;
 
-	// TAS
-	int						m_frameAdvanceKey;			// To allow event repeat of this key
+    // TAS
+    int						m_frameAdvanceKey;
 
 public:
 	GSPanel( wxWindow* parent );
-	virtual ~GSPanel() throw();
+	virtual ~GSPanel();
 
 	virtual void DoResize();
 	void DoShowMouse();
@@ -68,7 +69,7 @@ protected:
 	void OnResize(wxSizeEvent& event);
 	void OnMouseEvent( wxMouseEvent& evt );
 	void OnHideMouseTimeout( wxTimerEvent& evt );
-	void OnKeyDown( wxKeyEvent& evt );
+	void OnKeyDownOrUp( wxKeyEvent& evt );
 	void OnFocus( wxFocusEvent& evt );
 	void OnFocusLost( wxFocusEvent& evt );
 	void CoreThread_OnResumed();
@@ -98,7 +99,7 @@ public:
 
 	void DoResize() override;			// Overload to re-create dc
 	void DirectKeyCommand( const KeyAcceleratorCode& kac ) override;
-	
+
 	void BeginFrame();			// Must be called at the beginning of the Lua boundary frame (clears the screen from the previous drawings)
 	void EndFrame();			// Must be called at the end of the Lua boundary frame
 
@@ -115,7 +116,7 @@ public:
 protected:
 	void OnEraseBackground(wxEraseEvent &event) {}
 	void OnPaint(wxPaintEvent &event);
-	
+
 	void Create();				// Initialises pointers
 };
 
@@ -143,7 +144,7 @@ protected:
 
 public:
 	GSFrame( const wxString& title);
-	virtual ~GSFrame() throw();
+	virtual ~GSFrame() = default;
 
 	GSPanel* GetViewport();
 	GSGUIPanel* GetGui();
