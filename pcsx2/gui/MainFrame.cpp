@@ -446,7 +446,7 @@ MainEmuFrame::MainEmuFrame(wxWindow* parent, const wxString& title)
 		_("For running raw PS2 binaries directly"));
 
 	m_menuSys.AppendSeparator();
-	m_menuSys.Append(MenuId_Sys_Restart, _("Restart"))->Enable(false);
+	// TODO FIX m_menuSys.Append(MenuId_Sys_Restart, _("Restart"))->Enable(false);
 	m_menuSys.Append(MenuId_Sys_SuspendResume,	_("Initializing..."));
 	m_menuSys.AppendSeparator();
 
@@ -659,7 +659,7 @@ void MainEmuFrame::ApplyCoreStatus()
     wxMenuItem* susres		= menubar.FindItem( MenuId_Sys_SuspendResume );
     wxMenuItem* cdvd		= menubar.FindItem( MenuId_Boot_CDVD );
     wxMenuItem* cdvd2		= menubar.FindItem( MenuId_Boot_CDVD2 );
-    wxMenuItem* restart	 	= menubar.FindItem( MenuId_Sys_Restart );
+    // TODO FIX wxMenuItem* restart	 	= menubar.FindItem( MenuId_Sys_Restart );
 
 	// [TODO] : Ideally each of these items would bind a listener instance to the AppCoreThread
 	// dispatcher, and modify their states accordingly.  This is just a hack (for now) -- air
@@ -689,6 +689,7 @@ void MainEmuFrame::ApplyCoreStatus()
 		}
 	}
 
+	/* FIX
 	if( restart )
 	{
 		if( vm )
@@ -730,6 +731,7 @@ void MainEmuFrame::ApplyCoreStatus()
 			cdvd2->SetHelp(_("Use fast boot to skip PS2 startup and splash screens"));
 		}
 	}
+	*/
 
 	menubar.Enable( MenuId_Sys_Shutdown, SysHasValidState() || CorePlugins.AreAnyInitialized() );
 	menubar.Enable( MenuId_Sys_Movie, SysHasValidState() || CorePlugins.AreAnyInitialized() );

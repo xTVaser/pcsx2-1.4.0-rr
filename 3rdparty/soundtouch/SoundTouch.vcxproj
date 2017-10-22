@@ -25,6 +25,14 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Testing - No Optimization|Win32">
+      <Configuration>Testing - No Optimization</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Testing - No Optimization|x64">
+      <Configuration>Testing - No Optimization</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E9B51944-7E6D-4BCD-83F2-7BBD5A46182D}</ProjectGuid>

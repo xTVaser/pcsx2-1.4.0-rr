@@ -114,7 +114,8 @@ protected:
 	wxMenu&			m_menuTools;	//--LuaEngine--//
 
 	wxMenuItem*		m_menuItem_RecentIsoMenu;
-    	wxMenuItem&		m_MenuItem_Console;
+    wxMenuItem&		m_MenuItem_Console;
+
 #if defined(__unix__)
     wxMenuItem&		m_MenuItem_Console_Stdio;
 #endif
@@ -125,9 +126,6 @@ protected:
 	wxMenu&			m_MovieSubmenu;	//--TAS--//
 	wxMenu&			m_ScreenshotSubmenu;
 	wxMenu&			m_AVIWAVSubmenu;
-
-	wxMenuItem&		m_MenuItem_Console;
-	wxMenuItem&		m_MenuItem_Console_Stdio;
 
 	PerPluginMenuInfo	m_PluginMenuPacks[PluginId_Count];
 

@@ -838,7 +838,7 @@ void GSFrame::OnUpdateTitle( wxTimerEvent& evt )
 	wxString title = templates.TitleTemplate;
 	title.Replace(L"${frame}",		pxsFmt(L"%d", g_FrameCount));	//--TAS--//
     title.Replace(L"${maxFrame}",	pxsFmt(L"%d", g_KeyMovie.getKeyMovieData().getMaxFrame()));
-    title.Replace(L"${mode}",		movieMode);
+    // TODO missing this title.Replace(L"${mode}",		movieMode);
 	title.Replace(L"${slot}",		pxsFmt(L"%d", States_GetCurrentSlot()));
 	title.Replace(L"${limiter}",	limiterStr);
 	title.Replace(L"${speed}",		pxsFmt(L"%3d%%", lround(percentage)));

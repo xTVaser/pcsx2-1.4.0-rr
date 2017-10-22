@@ -165,7 +165,6 @@ enum MenuIdentifiers
 	MenuId_Debug_Logging,		// dialog for selection additional log options
 	MenuId_Debug_CreateBlockdump,
 	MenuId_Config_ResetAll,
-	MenuId_Config_ResetAll,
 
 	//--TAS--//
 	MenuId_KeyMovie_Record,

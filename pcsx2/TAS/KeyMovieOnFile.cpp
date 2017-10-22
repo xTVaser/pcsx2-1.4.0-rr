@@ -56,7 +56,7 @@ bool KeyMovieOnFile::Open(const wxString fn, bool fNewOpen, VmStateBuffer *ss)
 			}
 		}
 		else {
-			UI_DisableSysReset();
+			// TODO fix this UI_DisableSysReset();
 			sApp.SysExecute();
 		}
 	}
@@ -221,7 +221,7 @@ bool KeyMovieOnFile::readHeaderAndCheck()
 	}
 	else {
 		// We restart the game
-		UI_DisableSysReset();
+		// TODO fix this UI_DisableSysReset();
 		sApp.SysExecute();
 	}
 
