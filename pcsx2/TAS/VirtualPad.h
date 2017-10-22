@@ -16,6 +16,7 @@ protected:
 	int port;
 
 	wxToggleButton *buttons[16];
+	wxSpinCtrl *buttonsPressure[16];
 	wxButton *reset;
 
 	wxSlider *sticks[4];

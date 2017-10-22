@@ -56,8 +56,8 @@ public:
 	//------------------------------------------
 	// normalKey
 	//------------------------------------------
-	std::map<wxString, bool> getNormalKeys(int port)const;
-	void setNormalKeys(int port, std::map<wxString, bool> key);
+	std::map<wxString, int> getNormalKeys(int port)const;
+	void setNormalKeys(int port, std::map<wxString, int> key);
 	
 	//------------------------------------------
 	// analogKey 0~255
@@ -70,8 +70,8 @@ public:
 
 
 private:
-	void setNormalButton(int port, wxString button, bool pushed);
-	bool getNormalButton(int port, wxString button)const;
+	void setNormalButton(int port, wxString button, int pressure);
+	int getNormalButton(int port, wxString button)const;
 	void getKeyBit(byte keybit[2], wxString button)const;
 
 	void setAnalogButton(int port, wxString button, int push);

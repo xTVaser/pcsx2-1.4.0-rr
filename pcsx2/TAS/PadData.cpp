@@ -73,16 +73,16 @@ void PadData::deserialize(wxString s)
 //=====================================
 // normal key
 //=====================================
-std::map<wxString, bool> PadData::getNormalKeys(int port)const
+std::map<wxString, int> PadData::getNormalKeys(int port)const
 {
-	std::map<wxString, bool> key;
+	std::map<wxString, int> key;
 	for (int i = 0; i < PadDataNormalKeysSize; i++)
 	{
-		key.insert(std::map<wxString, bool>::value_type(PadDataNormalKeys[i], getNormalButton(port, PadDataNormalKeys[i])));
+		key.insert(std::map<wxString, int>::value_type(PadDataNormalKeys[i], getNormalButton(port, PadDataNormalKeys[i])));
 	}
 	return key;
 }
-void PadData::setNormalKeys(int port, std::map<wxString, bool> key)
+void PadData::setNormalKeys(int port, std::map<wxString, int> key)
 {
 	for (auto it = key.begin(); it != key.end(); ++it)
 	{
@@ -90,7 +90,7 @@ void PadData::setNormalKeys(int port, std::map<wxString, bool> key)
 	}
 }
 
-void PadData::setNormalButton(int port,wxString button, bool fpushed)
+void PadData::setNormalButton(int port,wxString button, int fpushed)
 {
 	if (port < 0 || 1 < port)return;
 	byte keybit[2];
@@ -108,7 +108,7 @@ void PadData::setNormalButton(int port,wxString button, bool fpushed)
 	}
 }
 
-bool PadData::getNormalButton(int port, wxString button)const
+int PadData::getNormalButton(int port, wxString button)const
 {
 	if (port < 0 || 1 < port)return false;
 	byte keybit[2];
