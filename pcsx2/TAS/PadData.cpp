@@ -78,7 +78,7 @@ std::map<wxString, int> PadData::getNormalKeys(int port)const
 	std::map<wxString, int> key;
 	for (int i = 0; i < PadDataNormalKeysSize; i++)
 	{
-		key.insert(std::map<wxString, u8>::value_type(PadDataNormalKeys[i], getNormalButton(port, PadDataNormalKeys[i])));
+		key.insert(std::map<wxString, int>::value_type(PadDataNormalKeys[i], getNormalButton(port, PadDataNormalKeys[i])));
 	}
 	return key;
 }
